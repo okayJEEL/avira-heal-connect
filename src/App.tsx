@@ -10,6 +10,9 @@ import About from "./pages/About";
 import OurDoctors from "./pages/OurDoctors";
 import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
+import StaffLogin from "./pages/StaffLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,8 @@ const App = () => (
           <Route path="/doctors" element={<OurDoctors />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/staff-login" element={<StaffLogin />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
