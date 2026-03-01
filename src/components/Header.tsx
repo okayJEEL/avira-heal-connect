@@ -31,9 +31,9 @@ const Header = () => {
               24/7 Emergency Services
             </span>
           </div>
-          <Link to="/staff-login" className="hover:underline font-medium">
-            Staff Login
-          </Link>
+          <span className="font-medium">
+            Staff Portal
+          </span>
         </div>
       </div>
 
