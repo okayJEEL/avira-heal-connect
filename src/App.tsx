@@ -11,6 +11,7 @@ import OurDoctors from "./pages/OurDoctors";
 import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
+import EmergencyButton from "./components/EmergencyButton";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/blog" element={<Blog />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <EmergencyButton />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
