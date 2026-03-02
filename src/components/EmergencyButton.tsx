@@ -17,7 +17,7 @@ const EmergencyButton = () => {
           >
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h3 className="text-lg font-heading font-bold text-destructive">Emergency</h3>
+                <h3 className="text-lg font-heading font-bold text-primary">Emergency</h3>
                 <p className="text-sm text-muted-foreground">24/7 Available</p>
               </div>
               <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">
@@ -28,11 +28,11 @@ const EmergencyButton = () => {
               For immediate medical assistance, call our emergency hotline
             </p>
             <a
-              href="tel:+919876543210"
-              className="flex items-center justify-center gap-2 w-full bg-destructive text-destructive-foreground rounded-lg py-3 font-medium hover:bg-destructive/90 transition-colors"
+              href="tel:02692354201"
+              className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium hover:bg-primary/90 transition-colors"
             >
               <Phone className="w-4 h-4" />
-              Call +91 98765 43210
+              Call 02692 354 201
             </a>
           </motion.div>
         )}
@@ -43,7 +43,7 @@ const EmergencyButton = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setOpen(true)}
-          className="w-14 h-14 rounded-full bg-destructive text-destructive-foreground shadow-lg flex items-center justify-center hover:bg-destructive/90 transition-colors"
+          className="w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
         >
           <Phone className="w-6 h-6" />
         </motion.button>
