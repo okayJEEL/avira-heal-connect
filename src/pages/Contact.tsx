@@ -17,7 +17,7 @@ const contactCards = [
   {
     icon: Phone,
     title: "Phone",
-    line1: "+91 98765 43210",
+    line1: "02692 354 201",
     line2: "Mon-Sun: 24/7 Available",
   },
   {
@@ -156,15 +156,15 @@ const Contact = () => {
               </div>
 
               {/* Emergency */}
-              <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6">
-                <h3 className="font-heading font-bold text-lg text-destructive mb-1">Emergency?</h3>
+              <div className="bg-primary/10 border border-primary/20 rounded-xl p-6">
+                <h3 className="font-heading font-bold text-lg text-primary mb-1">Emergency?</h3>
                 <p className="text-sm text-foreground/80 mb-4">For immediate medical assistance, call our emergency hotline</p>
                 <a
-                  href="tel:+919876543210"
-                  className="flex items-center justify-center gap-2 w-full bg-destructive text-destructive-foreground rounded-lg py-3 font-medium hover:bg-destructive/90 transition-colors"
+                  href="tel:02692354201"
+                  className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium hover:bg-primary/90 transition-colors"
                 >
                   <Phone className="w-4 h-4" />
-                  Call Emergency: +91 98765 43210
+                  Call Emergency: 02692 354 201
                 </a>
               </div>
             </div>
