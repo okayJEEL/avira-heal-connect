@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Phone, Clock, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import aviraLogo from "@/assets/avira-logo.png";
 
 const navLinks = [
   { label: "Home", to: "/" },
@@ -41,9 +42,7 @@ const Header = () => {
       <nav className="bg-card shadow-sm">
         <div className="container-custom flex items-center justify-between py-3 px-4 md:px-8">
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-heading font-bold text-lg">
-              A+
-            </div>
+            <img src={aviraLogo} alt="Avira Hospital Logo" className="w-10 h-10 rounded-lg object-contain" />
             <div>
               <h1 className="text-xl font-heading font-bold text-primary leading-tight">
                 Avira Hospital
