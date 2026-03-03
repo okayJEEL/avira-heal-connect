@@ -53,11 +53,11 @@ const DoctorsSection = () => {
               transition={{ delay: i * 0.15 }}
               className="bg-card rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="h-64 overflow-hidden">
+              <div className="h-72 overflow-hidden bg-primary/5 flex items-center justify-center">
                 <img
                   src={doc.image}
                   alt={doc.name}
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="p-5">
