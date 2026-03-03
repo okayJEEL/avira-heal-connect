@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook, Instagram, Clock } from "lucide-react";
+import aviraLogo from "@/assets/avira-logo.png";
 
 const Footer = () => {
   return (
@@ -27,9 +28,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-heading font-bold text-lg">
-                A+
-              </div>
+              <img src={aviraLogo} alt="Avira Hospital Logo" className="w-10 h-10 rounded-lg object-contain" />
               <div>
                 <h3 className="text-lg font-heading font-bold">Avira Hospital</h3>
                 <p className="text-xs text-background/60">Care You Can Trust</p>
