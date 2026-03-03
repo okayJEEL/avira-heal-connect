@@ -24,8 +24,8 @@ const OurDoctors = () => {
                 transition={{ delay: i * 0.15 }}
                 className="bg-card rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row"
               >
-                <div className="md:w-64 h-64 md:h-auto shrink-0 overflow-hidden">
-                  <img src={doc.image} alt={doc.name} className="w-full h-full object-cover object-top" />
+                <div className="md:w-64 h-72 md:h-auto shrink-0 overflow-hidden bg-primary/5 flex items-center justify-center">
+                  <img src={doc.image} alt={doc.name} className="w-full h-full object-contain" />
                 </div>
                 <div className="p-6 flex-1">
                   <h2 className="text-xl font-heading font-bold">{doc.name}</h2>
