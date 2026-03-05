@@ -37,19 +37,25 @@ const AppointmentSlip = ({
 }: AppointmentSlipProps) => {
   const slipRef = useRef<HTMLDivElement>(null);
 
-  const handleDownloadPDF = async () => {
-    if (!slipRef.current) return;
-    const html2pdf = (await import("html2pdf.js")).default;
-    html2pdf()
-      .set({
-        margin: 0,
-        filename: `Avira-Appointment-${appointmentId}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      })
-      .from(slipRef.current)
-      .save();
+  const handleDownloadPDF = () => {
+    const printContent = slipRef.current;
+    if (!printContent) return;
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(`
+      <html>
+        <head>
+          <title>Avira-Appointment-${appointmentId}</title>
+          <style>
+            body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+            @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+          </style>
+        </head>
+        <body>${printContent.outerHTML}</body>
+      </html>
+    `);
+    win.document.close();
+    setTimeout(() => { win.print(); win.close(); }, 500);
   };
 
   const handlePrint = () => {
