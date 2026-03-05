@@ -16,8 +16,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import AppointmentSlip from "@/components/AppointmentSlip";
 
 const EMAILJS_PUBLIC_KEY = "zN2bb9xlC65XS2wwg";
+
+function generateAppointmentId(): string {
+  const year = new Date().getFullYear();
+  const random = Math.floor(100000 + Math.random() * 900000);
+  return `AH-${year}-${random}`;
+}
 const EMAILJS_SERVICE_ID = "service_rdjqrbt";
 const EMAILJS_TEMPLATE_ID = "template_nh07zjn";
 
@@ -69,6 +76,7 @@ const BookAppointment = () => {
   const [timeSlot, setTimeSlot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [appointmentId, setAppointmentId] = useState("");
 
   const selectedDoctor = doctors.find((d) => d.id === form.doctorId);
 
@@ -121,33 +129,47 @@ const BookAppointment = () => {
         },
         EMAILJS_PUBLIC_KEY
       );
+      setAppointmentId(generateAppointmentId());
       setSuccess(true);
     } catch {
       toast({ title: "Failed to send confirmation email. Your appointment is still noted.", variant: "destructive" });
+      setAppointmentId(generateAppointmentId());
       setSuccess(true);
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (success) {
+  if (success && date) {
     return (
       <div className="min-h-screen">
         <Header />
         <div className="section-padding">
-          <div className="container-custom max-w-lg text-center">
-            <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-heading font-bold mb-2">Appointment Booked!</h2>
-            <p className="text-muted-foreground mb-2">
-              Your appointment with <strong>{selectedDoctor?.name}</strong> on{" "}
-              <strong>{date && format(date, "dd MMM yyyy")}</strong> at <strong>{timeSlot}</strong> has been confirmed.
-            </p>
-            <p className="text-sm text-muted-foreground mb-6">
-              Consultation Fee: <strong>₹{fee}</strong> (payable at hospital)
-            </p>
-            <Button onClick={() => { setSuccess(false); setForm({ ...form, patientName: "", mobile: "", reason: "" }); setDate(undefined); setTimeSlot(""); }}>
-              Book Another
-            </Button>
+          <div className="container-custom">
+            <div className="text-center mb-6">
+              <CheckCircle className="w-12 h-12 text-primary mx-auto mb-2" />
+              <h2 className="text-2xl font-heading font-bold">Appointment Booked!</h2>
+            </div>
+            <AppointmentSlip
+              appointmentId={appointmentId}
+              doctorName={selectedDoctor?.name || ""}
+              specialization={selectedDoctor?.specialty || ""}
+              appointmentDate={date}
+              timeSlot={timeSlot}
+              patientName={form.patientName}
+              age={form.age}
+              gender={form.gender}
+              mobile={form.mobile}
+              address={`${form.address}, ${form.city} - ${form.pincode}`}
+              reason={form.reason}
+              fee={fee}
+              patientType={form.isExisting === "yes" ? "Existing" : "New"}
+            />
+            <div className="text-center mt-6">
+              <Button variant="outline" onClick={() => { setSuccess(false); setForm({ ...form, patientName: "", mobile: "", reason: "" }); setDate(undefined); setTimeSlot(""); }}>
+                Book Another Appointment
+              </Button>
+            </div>
           </div>
         </div>
         <Footer />
