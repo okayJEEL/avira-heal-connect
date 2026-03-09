@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { format, isToday, isBefore, startOfDay } from "date-fns";
 import { CalendarIcon, CheckCircle, Video, Building2 } from "lucide-react";
 import emailjs from "@emailjs/browser";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { doctors } from "@/components/DoctorsSection";
