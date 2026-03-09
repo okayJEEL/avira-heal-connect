@@ -140,35 +140,80 @@ const BookAppointment = () => {
 
     setSubmitting(true);
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
+      const newId = generateAppointmentId();
+      
+      // Create appointment date-time
+      const [time, ampm] = timeSlot.split(" ");
+      const [hours, minutes] = time.split(":");
+      let hour24 = parseInt(hours);
+      if (ampm === "PM" && hour24 !== 12) hour24 += 12;
+      if (ampm === "AM" && hour24 === 12) hour24 = 0;
+      
+      const appointmentDateTime = new Date(date);
+      appointmentDateTime.setHours(hour24, parseInt(minutes), 0, 0);
+
+      const videoCallLink = form.consultationType === "video" 
+        ? `https://meet.jit.si/avira-hospital-${newId}` 
+        : null;
+
+      // Save to database
+      const { error: dbError } = await supabase
+        .from("appointments")
+        .insert({
+          id: newId,
           patient_name: form.patientName,
-          patient_type: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
           mobile: form.mobile,
-          age: form.age,
-          gender: form.gender,
-          marital_status: form.maritalStatus,
-          address: `${form.address}, ${form.city} - ${form.pincode}`,
-          doctor_name: selectedDoctor?.name,
-          specialization: selectedDoctor?.specialty,
-          date: format(date, "dd/MM/yyyy"),
-          time_slot: timeSlot,
-          reason: form.reason,
-          fee: `₹${fee}`,
-          to_email: "avirahospital@gmail.com",
-        },
-        EMAILJS_PUBLIC_KEY
-      );
-      const newId = generateAppointmentId();
+          age: form.age ? parseInt(form.age) : null,
+          gender: form.gender || null,
+          department: selectedDoctor?.specialty || null,
+          time_slot: appointmentDateTime.toISOString(),
+          fee: fee,
+          notes: form.reason || null,
+          consultation_type: form.consultationType,
+          video_call_link: videoCallLink,
+          email: form.email || null,
+          address: `${form.address}, ${form.city} - ${form.pincode}`.trim().replace(/^, /, '').replace(/ - $/, '') || null,
+          patient_type: form.isExisting,
+          status: "pending"
+        });
+
+      if (dbError) throw dbError;
+
+      // Send email notification
+      try {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            patient_name: form.patientName,
+            patient_type: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
+            mobile: form.mobile,
+            age: form.age,
+            gender: form.gender,
+            marital_status: form.maritalStatus,
+            address: `${form.address}, ${form.city} - ${form.pincode}`,
+            doctor_name: selectedDoctor?.name,
+            specialization: selectedDoctor?.specialty,
+            date: format(date, "dd/MM/yyyy"),
+            time_slot: timeSlot,
+            reason: form.reason,
+            fee: `₹${fee}`,
+            to_email: "avirahospital@gmail.com",
+          },
+          EMAILJS_PUBLIC_KEY
+        );
+      } catch (emailError) {
+        console.warn("Email notification failed:", emailError);
+      }
+
       setAppointmentId(newId);
       setSuccess(true);
-    } catch {
-      toast({ title: "Failed to send confirmation email. Your appointment is still noted.", variant: "destructive" });
-      const newId = generateAppointmentId();
-      setAppointmentId(newId);
-      setSuccess(true);
+    } catch (error: any) {
+      toast({ 
+        title: "Booking failed", 
+        description: error.message || "Please try again",
+        variant: "destructive" 
+      });
     } finally {
       setSubmitting(false);
     }
