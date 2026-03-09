@@ -73,12 +73,14 @@ const BookAppointment = () => {
     doctorId: preselectedDoctor,
     reason: "",
     consultationType: "opd",
+    email: "",
   });
   const [date, setDate] = useState<Date>();
   const [timeSlot, setTimeSlot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [appointmentId, setAppointmentId] = useState("");
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
   const selectedDoctor = doctors.find((d) => d.id === form.doctorId);
 
