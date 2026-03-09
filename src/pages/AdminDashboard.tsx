@@ -130,6 +130,37 @@ const AdminDashboard = () => {
       </header>
 
       <main className="container mx-auto p-4 md:p-8 space-y-6">
+        {/* Quick Nav Buttons */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Appointments", icon: Calendar, tab: "appointments" },
+            { label: "Doctors", icon: Users, tab: "doctors" },
+            { label: "Messages", icon: MessageCircle, tab: "messages" },
+            { label: "View Website", icon: Monitor, tab: "website" },
+          ].map((item) => (
+            <button
+              key={item.tab}
+              onClick={() => {
+                if (item.tab === "website") {
+                  window.open("/", "_blank");
+                } else {
+                  setActiveTab(item.tab);
+                }
+              }}
+              className={`group relative p-6 rounded-xl border bg-card shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in ${
+                activeTab === item.tab && item.tab !== "website" ? "border-primary ring-2 ring-primary/20" : "border-border"
+              }`}
+            >
+              <div className="flex flex-col items-center gap-3">
+                <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                  <item.icon className="w-7 h-7 text-primary" />
+                </div>
+                <span className="font-medium text-foreground">{item.label}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
@@ -369,14 +400,52 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="doctors">
-            <Card>
-              <CardHeader>
-                <CardTitle>Doctors Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Doctor management features coming soon...</p>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                {
+                  name: "Dr. Vivek Siddhpura",
+                  designation: "Consulting Physician & Diabetologist",
+                  qualifications: "MBBS, M.D., PGCDM",
+                  image: drVivekImg,
+                  feeNew: 700,
+                  feeExisting: 350,
+                },
+                {
+                  name: "Dr. Preeti Siddhpura",
+                  designation: "Aesthetic Physician & Cosmetologist",
+                  qualifications: "MBBS, FAM, PGDCC, PGDCD",
+                  image: drPreetiImg,
+                  feeNew: 600,
+                  feeExisting: 300,
+                },
+              ].map((doc) => (
+                <Card key={doc.name} className="overflow-hidden animate-fade-in hover:shadow-lg transition-shadow duration-300">
+                  <CardContent className="p-0">
+                    <div className="flex flex-col sm:flex-row">
+                      <div className="sm:w-48 h-56 sm:h-auto bg-muted flex-shrink-0">
+                        <img
+                          src={doc.image}
+                          alt={doc.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-6 flex flex-col justify-center">
+                        <h3 className="text-xl font-heading font-bold text-foreground">{doc.name}</h3>
+                        <p className="text-primary font-medium mt-1">{doc.designation}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{doc.qualifications}</p>
+                        <div className="mt-4 space-y-1">
+                          <p className="text-sm"><span className="font-medium text-foreground">New Patient Fee:</span> <span className="text-primary font-bold">₹{doc.feeNew}</span></p>
+                          <p className="text-sm"><span className="font-medium text-foreground">Existing Patient Fee:</span> <span className="text-primary font-bold">₹{doc.feeExisting}</span></p>
+                        </div>
+                        <div className="mt-4">
+                          <Badge className="bg-green-100 text-green-700 border-green-200">Available</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
 
           <TabsContent value="messages">
@@ -395,8 +464,10 @@ const AdminDashboard = () => {
               <CardHeader>
                 <CardTitle>View Website</CardTitle>
               </CardHeader>
-              <CardContent>
-                <Button onClick={() => window.open("/", "_blank")}>
+              <CardContent className="flex flex-col items-center gap-4 py-8">
+                <Monitor className="w-12 h-12 text-primary" />
+                <p className="text-muted-foreground">Click below to open the hospital website in a new tab</p>
+                <Button size="lg" onClick={() => window.open("/", "_blank")}>
                   <Monitor className="w-4 h-4 mr-2" />
                   Open Website
                 </Button>
