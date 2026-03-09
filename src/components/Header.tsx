@@ -32,9 +32,11 @@ const Header = () => {
               24/7 Emergency Services
             </span>
           </div>
-          <span className="font-medium">
-            Staff Portal
-          </span>
+          <Link to="/staff-login">
+            <Button variant="outline" size="sm" className="bg-primary-foreground/10 hover:bg-primary-foreground/20 border-primary-foreground/30 text-primary-foreground">
+              Staff Portal
+            </Button>
+          </Link>
         </div>
       </div>
 
