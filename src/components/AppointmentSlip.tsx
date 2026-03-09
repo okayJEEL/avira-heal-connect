@@ -36,6 +36,8 @@ const AppointmentSlip = ({
   reason,
   fee,
   patientType,
+  consultationType = "opd",
+  videoCallLink,
 }: AppointmentSlipProps) => {
   const slipRef = useRef<HTMLDivElement>(null);
 
