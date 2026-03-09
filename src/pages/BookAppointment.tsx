@@ -175,16 +175,33 @@ const BookAppointment = () => {
 
       if (dbError) throw dbError;
       
-      const displayId = `AH-${new Date().getFullYear()}-${insertedData.id.slice(0, 6).toUpperCase()}`;
+      const displayId = `AH-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
       
-      // Update video call link if needed
-      if (form.consultationType === "video") {
-        const videoCallLink = `https://meet.jit.si/avira-hospital-${displayId}`;
-        await supabase
-          .from("appointments")
-          .update({ video_call_link: videoCallLink })
-          .eq("id", insertedData.id);
-      }
+      const videoCallLink = form.consultationType === "video" 
+        ? `https://meet.jit.si/avira-hospital-${displayId}` 
+        : null;
+
+      // Save to database
+      const { error: dbError } = await supabase
+        .from("appointments")
+        .insert({
+          patient_name: form.patientName,
+          mobile: form.mobile,
+          age: form.age ? parseInt(form.age) : null,
+          gender: form.gender || null,
+          department: selectedDoctor?.specialty || null,
+          time_slot: appointmentDateTime.toISOString(),
+          fee: fee,
+          notes: form.reason || null,
+          consultation_type: form.consultationType,
+          video_call_link: videoCallLink,
+          email: form.email || null,
+          address: `${form.address}, ${form.city} - ${form.pincode}`.trim().replace(/^, /, '').replace(/ - $/, '') || null,
+          patient_type: form.isExisting,
+          status: "pending"
+        });
+
+      if (dbError) throw dbError;
 
       // Send email notification
       try {
