@@ -89,15 +89,43 @@ const BookAppointment = () => {
     return form.isExisting === "yes" ? selectedDoctor.feeExisting : selectedDoctor.feeNew;
   }, [selectedDoctor, form.isExisting]);
 
+  // Fetch booked slots when date changes
+  useEffect(() => {
+    if (!date) return;
+    
+    const fetchBookedSlots = async () => {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("time_slot")
+        .eq("time_slot::date", format(date, "yyyy-MM-dd"))
+        .neq("status", "cancelled");
+      
+      if (!error && data) {
+        const slots = data.map(apt => format(new Date(apt.time_slot), "h:mm a"));
+        setBookedSlots(slots);
+      }
+    };
+
+    fetchBookedSlots();
+  }, [date]);
+
   const availableSlots = useMemo(() => {
     if (!date) return [];
     const now = new Date();
+    
+    let filteredSlots = allSlots;
+    
+    // Filter by time if today
     if (isToday(date)) {
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      return allSlots.filter((slot) => slotToMinutes(slot) > currentMinutes);
+      filteredSlots = allSlots.filter((slot) => slotToMinutes(slot) > currentMinutes);
     }
-    return allSlots;
-  }, [date]);
+    
+    // Filter out booked slots
+    filteredSlots = filteredSlots.filter(slot => !bookedSlots.includes(slot));
+    
+    return filteredSlots;
+  }, [date, bookedSlots]);
 
   const updateForm = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
