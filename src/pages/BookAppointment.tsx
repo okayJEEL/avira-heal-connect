@@ -163,10 +163,9 @@ const BookAppointment = () => {
         : null;
 
       // Save to database
-      const { error: dbError } = await supabase
+      const { data: insertedData, error: dbError } = await supabase
         .from("appointments")
         .insert({
-          id: newId,
           patient_name: form.patientName,
           mobile: form.mobile,
           age: form.age ? parseInt(form.age) : null,
@@ -181,9 +180,13 @@ const BookAppointment = () => {
           address: `${form.address}, ${form.city} - ${form.pincode}`.trim().replace(/^, /, '').replace(/ - $/, '') || null,
           patient_type: form.isExisting,
           status: "pending"
-        });
+        })
+        .select('id')
+        .single();
 
       if (dbError) throw dbError;
+      
+      const displayId = `AH-${new Date().getFullYear()}-${insertedData.id.slice(0, 6).toUpperCase()}`;
 
       // Send email notification
       try {
