@@ -198,8 +198,38 @@ const AppointmentSlip = ({
               </div>
             </div>
             <div style={{ marginTop: "4px", fontSize: "12px", color: "#64748b" }}>
-              Consultation Type: OPD
+              Consultation Type: {consultationType === "video" ? "📹 Video Consultation" : "OPD"}
             </div>
+            {consultationType === "video" && videoCallLink && (
+              <div style={{
+                marginTop: "10px",
+                background: "#f0fdf4",
+                border: "1px solid #bbf7d0",
+                borderRadius: "6px",
+                padding: "10px 14px",
+              }}>
+                <div style={{ fontSize: "12px", fontWeight: 700, color: "#166534", marginBottom: "4px" }}>
+                  🎥 Video Call Link
+                </div>
+                <a
+                  href={videoCallLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: "13px",
+                    color: "#0369a1",
+                    fontWeight: 600,
+                    wordBreak: "break-all",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {videoCallLink}
+                </a>
+                <div style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
+                  Join at your scheduled time. Share this link with your doctor if needed.
+                </div>
+              </div>
+            )}
           </SectionBox>
 
           {/* Patient Details */}

@@ -191,6 +191,29 @@ const BookAppointment = () => {
           <p className="text-center text-muted-foreground mb-8">Fill in your details to schedule a consultation</p>
 
           <form onSubmit={handleSubmit} className="bg-card rounded-xl shadow-sm p-6 md:p-8 space-y-6">
+            {/* Consultation Type */}
+            <div>
+              <Label>Consultation Type *</Label>
+              <RadioGroup value={form.consultationType} onValueChange={(v) => updateForm("consultationType", v)} className="flex gap-4 mt-2">
+                <div className="flex items-center gap-2 border border-border rounded-lg px-4 py-3 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+                  <RadioGroupItem value="opd" id="opd" />
+                  <Building2 className="w-4 h-4 text-muted-foreground" />
+                  <Label htmlFor="opd" className="cursor-pointer font-medium">In-Person (OPD)</Label>
+                </div>
+                <div className="flex items-center gap-2 border border-border rounded-lg px-4 py-3 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+                  <RadioGroupItem value="video" id="video" />
+                  <Video className="w-4 h-4 text-muted-foreground" />
+                  <Label htmlFor="video" className="cursor-pointer font-medium">Video Consultation</Label>
+                </div>
+              </RadioGroup>
+              {form.consultationType === "video" && (
+                <div className="mt-3 bg-primary/5 border border-primary/20 rounded-lg p-3 text-sm text-muted-foreground flex items-start gap-2">
+                  <Video className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <span>You'll receive a video call link in your appointment slip. Join at your scheduled time using any device with a camera and microphone.</span>
+                </div>
+              )}
+            </div>
+
             {/* Doctor Selection */}
             <div>
               <Label>Select Doctor *</Label>
