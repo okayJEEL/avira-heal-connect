@@ -18,6 +18,8 @@ interface AppointmentSlipProps {
   reason: string;
   fee: number;
   patientType: string;
+  consultationType?: "opd" | "video";
+  videoCallLink?: string;
 }
 
 const AppointmentSlip = ({
