@@ -151,29 +151,7 @@ const BookAppointment = () => {
       const appointmentDateTime = new Date(date);
       appointmentDateTime.setHours(hour24, parseInt(minutes), 0, 0);
 
-      // Save to database
-      const { data: insertedData, error: dbError } = await supabase
-        .from("appointments")
-        .insert({
-          patient_name: form.patientName,
-          mobile: form.mobile,
-          age: form.age ? parseInt(form.age) : null,
-          gender: form.gender || null,
-          department: selectedDoctor?.specialty || null,
-          time_slot: appointmentDateTime.toISOString(),
-          fee: fee,
-          notes: form.reason || null,
-          consultation_type: form.consultationType,
-          video_call_link: null, // Will update after getting ID
-          email: form.email || null,
-          address: `${form.address}, ${form.city} - ${form.pincode}`.trim().replace(/^, /, '').replace(/ - $/, '') || null,
-          patient_type: form.isExisting,
-          status: "pending"
-        })
-        .select('id')
-        .single();
 
-      if (dbError) throw dbError;
       
       const displayId = `AH-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
       
