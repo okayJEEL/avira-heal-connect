@@ -94,10 +94,16 @@ const BookAppointment = () => {
     if (!date) return;
     
     const fetchBookedSlots = async () => {
+      const startOfSelectedDay = new Date(date);
+      startOfSelectedDay.setHours(0, 0, 0, 0);
+      const endOfSelectedDay = new Date(date);
+      endOfSelectedDay.setHours(23, 59, 59, 999);
+
       const { data, error } = await supabase
         .from("appointments")
         .select("time_slot")
-        .eq("time_slot::date", format(date, "yyyy-MM-dd"))
+        .gte("time_slot", startOfSelectedDay.toISOString())
+        .lte("time_slot", endOfSelectedDay.toISOString())
         .neq("status", "cancelled");
       
       if (!error && data) {
