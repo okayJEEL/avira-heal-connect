@@ -275,7 +275,12 @@ const AdminDashboard = () => {
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-border">
                             <div>
                               <p className="text-sm font-medium text-foreground">Doctor:</p>
-                              <p className="text-sm text-primary">{apt.department || "Dr. Vivek Sidhapura"}</p>
+                              <p className="text-sm text-primary">
+                                {apt.department === "Aesthetic Physician & Cosmetologist" 
+                                  ? "Dr. Preeti Siddhpura" 
+                                  : "Dr. Vivek Siddhpura"}
+                              </p>
+                              <p className="text-sm text-muted-foreground">{apt.department || "Consulting Physician & Diabetologist"}</p>
                             </div>
                             <div>
                               <p className="text-sm font-medium text-foreground">Date & Time:</p>
