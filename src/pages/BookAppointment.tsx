@@ -167,6 +167,8 @@ const BookAppointment = () => {
               reason={form.reason}
               fee={fee}
               patientType={form.isExisting === "yes" ? "Existing" : "New"}
+              consultationType={form.consultationType as "opd" | "video"}
+              videoCallLink={form.consultationType === "video" ? `https://meet.jit.si/avira-hospital-${appointmentId}` : undefined}
             />
             <div className="text-center mt-6">
               <Button variant="outline" onClick={() => { setSuccess(false); setForm({ ...form, patientName: "", mobile: "", reason: "" }); setDate(undefined); setTimeSlot(""); }}>
