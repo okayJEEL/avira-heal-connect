@@ -385,6 +385,10 @@ const BookAppointment = () => {
                 <Input required type="tel" placeholder="Mobile number" value={form.mobile} onChange={(e) => updateForm("mobile", e.target.value)} />
               </div>
               <div>
+                <Label>Email</Label>
+                <Input type="email" placeholder="Email address" value={form.email} onChange={(e) => updateForm("email", e.target.value)} />
+              </div>
+              <div>
                 <Label>Age</Label>
                 <Input type="number" placeholder="Age" value={form.age} onChange={(e) => updateForm("age", e.target.value)} />
               </div>
