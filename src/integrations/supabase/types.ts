@@ -16,46 +16,61 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
+          address: string | null
           age: number | null
+          consultation_type: string | null
           created_at: string
           department: string | null
           doctor_id: string | null
+          email: string | null
           fee: number | null
           gender: string | null
           id: string
           mobile: string
           notes: string | null
           patient_name: string
+          patient_type: string | null
           status: string
           time_slot: string
+          video_call_link: string | null
         }
         Insert: {
+          address?: string | null
           age?: number | null
+          consultation_type?: string | null
           created_at?: string
           department?: string | null
           doctor_id?: string | null
+          email?: string | null
           fee?: number | null
           gender?: string | null
           id?: string
           mobile: string
           notes?: string | null
           patient_name: string
+          patient_type?: string | null
           status?: string
           time_slot: string
+          video_call_link?: string | null
         }
         Update: {
+          address?: string | null
           age?: number | null
+          consultation_type?: string | null
           created_at?: string
           department?: string | null
           doctor_id?: string | null
+          email?: string | null
           fee?: number | null
           gender?: string | null
           id?: string
           mobile?: string
           notes?: string | null
           patient_name?: string
+          patient_type?: string | null
           status?: string
           time_slot?: string
+          video_call_link?: string | null
         }
         Relationships: []
       }
