@@ -134,7 +134,7 @@ const BookAppointment = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date || !timeSlot || !form.doctorId || !form.patientName || !form.mobile) {
+    if (!date || !timeSlot || !form.doctorId || !form.patientName || !form.mobile || !form.age || !form.gender || !form.maritalStatus || !form.address || !form.city || !form.pincode || !form.reason) {
       toast({ title: "Please fill all required fields", variant: "destructive" });
       return;
     }
@@ -388,14 +388,14 @@ const BookAppointment = () => {
               </div>
               <div>
                 <Label>Email</Label>
-                <Input type="email" placeholder="Email address" value={form.email} onChange={(e) => updateForm("email", e.target.value)} />
+                <Input type="email" placeholder="Email address (optional)" value={form.email} onChange={(e) => updateForm("email", e.target.value)} />
               </div>
               <div>
-                <Label>Age</Label>
-                <Input type="number" placeholder="Age" value={form.age} onChange={(e) => updateForm("age", e.target.value)} />
+                <Label>Age *</Label>
+                <Input required type="number" placeholder="Age" value={form.age} onChange={(e) => updateForm("age", e.target.value)} />
               </div>
               <div>
-                <Label>Gender</Label>
+                <Label>Gender *</Label>
                 <Select value={form.gender} onValueChange={(v) => updateForm("gender", v)}>
                   <SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger>
                   <SelectContent>
@@ -406,7 +406,7 @@ const BookAppointment = () => {
                 </Select>
               </div>
               <div>
-                <Label>Marital Status</Label>
+                <Label>Marital Status *</Label>
                 <Select value={form.maritalStatus} onValueChange={(v) => updateForm("maritalStatus", v)}>
                   <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                   <SelectContent>
@@ -418,23 +418,23 @@ const BookAppointment = () => {
                 </Select>
               </div>
               <div>
-                <Label>City</Label>
-                <Input placeholder="City" value={form.city} onChange={(e) => updateForm("city", e.target.value)} />
+                <Label>City *</Label>
+                <Input required placeholder="City" value={form.city} onChange={(e) => updateForm("city", e.target.value)} />
               </div>
             </div>
             <div>
-              <Label>Address</Label>
-              <Input placeholder="Full address" value={form.address} onChange={(e) => updateForm("address", e.target.value)} />
+              <Label>Address *</Label>
+              <Input required placeholder="Full address" value={form.address} onChange={(e) => updateForm("address", e.target.value)} />
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <Label>Pincode</Label>
-                <Input placeholder="Pincode" value={form.pincode} onChange={(e) => updateForm("pincode", e.target.value)} />
+                <Label>Pincode *</Label>
+                <Input required placeholder="Pincode" value={form.pincode} onChange={(e) => updateForm("pincode", e.target.value)} />
               </div>
             </div>
             <div>
-              <Label>Reason for Booking</Label>
-              <Textarea placeholder="Briefly describe your reason for visit" value={form.reason} onChange={(e) => updateForm("reason", e.target.value)} />
+              <Label>Reason for Booking *</Label>
+              <Textarea required placeholder="Briefly describe your reason for visit" value={form.reason} onChange={(e) => updateForm("reason", e.target.value)} />
             </div>
 
             <Button type="submit" size="lg" className="w-full" disabled={submitting}>
