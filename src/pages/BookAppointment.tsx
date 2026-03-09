@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { format, isToday, isBefore, startOfDay } from "date-fns";
-import { CalendarIcon, CheckCircle } from "lucide-react";
+import { CalendarIcon, CheckCircle, Video, Building2 } from "lucide-react";
 import emailjs from "@emailjs/browser";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -71,6 +71,7 @@ const BookAppointment = () => {
     pincode: "",
     doctorId: preselectedDoctor,
     reason: "",
+    consultationType: "opd",
   });
   const [date, setDate] = useState<Date>();
   const [timeSlot, setTimeSlot] = useState("");
@@ -129,11 +130,13 @@ const BookAppointment = () => {
         },
         EMAILJS_PUBLIC_KEY
       );
-      setAppointmentId(generateAppointmentId());
+      const newId = generateAppointmentId();
+      setAppointmentId(newId);
       setSuccess(true);
     } catch {
       toast({ title: "Failed to send confirmation email. Your appointment is still noted.", variant: "destructive" });
-      setAppointmentId(generateAppointmentId());
+      const newId = generateAppointmentId();
+      setAppointmentId(newId);
       setSuccess(true);
     } finally {
       setSubmitting(false);
@@ -164,6 +167,8 @@ const BookAppointment = () => {
               reason={form.reason}
               fee={fee}
               patientType={form.isExisting === "yes" ? "Existing" : "New"}
+              consultationType={form.consultationType as "opd" | "video"}
+              videoCallLink={form.consultationType === "video" ? `https://meet.jit.si/avira-hospital-${appointmentId}` : undefined}
             />
             <div className="text-center mt-6">
               <Button variant="outline" onClick={() => { setSuccess(false); setForm({ ...form, patientName: "", mobile: "", reason: "" }); setDate(undefined); setTimeSlot(""); }}>
@@ -186,6 +191,29 @@ const BookAppointment = () => {
           <p className="text-center text-muted-foreground mb-8">Fill in your details to schedule a consultation</p>
 
           <form onSubmit={handleSubmit} className="bg-card rounded-xl shadow-sm p-6 md:p-8 space-y-6">
+            {/* Consultation Type */}
+            <div>
+              <Label>Consultation Type *</Label>
+              <RadioGroup value={form.consultationType} onValueChange={(v) => updateForm("consultationType", v)} className="flex gap-4 mt-2">
+                <div className="flex items-center gap-2 border border-border rounded-lg px-4 py-3 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+                  <RadioGroupItem value="opd" id="opd" />
+                  <Building2 className="w-4 h-4 text-muted-foreground" />
+                  <Label htmlFor="opd" className="cursor-pointer font-medium">In-Person (OPD)</Label>
+                </div>
+                <div className="flex items-center gap-2 border border-border rounded-lg px-4 py-3 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
+                  <RadioGroupItem value="video" id="video" />
+                  <Video className="w-4 h-4 text-muted-foreground" />
+                  <Label htmlFor="video" className="cursor-pointer font-medium">Video Consultation</Label>
+                </div>
+              </RadioGroup>
+              {form.consultationType === "video" && (
+                <div className="mt-3 bg-primary/5 border border-primary/20 rounded-lg p-3 text-sm text-muted-foreground flex items-start gap-2">
+                  <Video className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <span>You'll receive a video call link in your appointment slip. Join at your scheduled time using any device with a camera and microphone.</span>
+                </div>
+              )}
+            </div>
+
             {/* Doctor Selection */}
             <div>
               <Label>Select Doctor *</Label>

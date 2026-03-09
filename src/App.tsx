@@ -11,6 +11,7 @@ import OurDoctors from "./pages/OurDoctors";
 import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
+import VideoCallRoom from "./pages/VideoCallRoom";
 import EmergencyButton from "./components/EmergencyButton";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/doctors" element={<OurDoctors />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/video-call/:roomId" element={<VideoCallRoom />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <EmergencyButton />
