@@ -71,6 +71,7 @@ const BookAppointment = () => {
     pincode: "",
     doctorId: preselectedDoctor,
     reason: "",
+    consultationType: "opd",
   });
   const [date, setDate] = useState<Date>();
   const [timeSlot, setTimeSlot] = useState("");
