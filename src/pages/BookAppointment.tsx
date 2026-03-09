@@ -146,8 +146,6 @@ const BookAppointment = () => {
 
     setSubmitting(true);
     try {
-      const newId = generateAppointmentId();
-      
       // Create appointment date-time
       const [time, ampm] = timeSlot.split(" ");
       const [hours, minutes] = time.split(":");
@@ -157,10 +155,6 @@ const BookAppointment = () => {
       
       const appointmentDateTime = new Date(date);
       appointmentDateTime.setHours(hour24, parseInt(minutes), 0, 0);
-
-      const videoCallLink = form.consultationType === "video" 
-        ? `https://meet.jit.si/avira-hospital-${newId}` 
-        : null;
 
       // Save to database
       const { data: insertedData, error: dbError } = await supabase
@@ -175,7 +169,7 @@ const BookAppointment = () => {
           fee: fee,
           notes: form.reason || null,
           consultation_type: form.consultationType,
-          video_call_link: videoCallLink,
+          video_call_link: null, // Will update after getting ID
           email: form.email || null,
           address: `${form.address}, ${form.city} - ${form.pincode}`.trim().replace(/^, /, '').replace(/ - $/, '') || null,
           patient_type: form.isExisting,
@@ -187,6 +181,15 @@ const BookAppointment = () => {
       if (dbError) throw dbError;
       
       const displayId = `AH-${new Date().getFullYear()}-${insertedData.id.slice(0, 6).toUpperCase()}`;
+      
+      // Update video call link if needed
+      if (form.consultationType === "video") {
+        const videoCallLink = `https://meet.jit.si/avira-hospital-${displayId}`;
+        await supabase
+          .from("appointments")
+          .update({ video_call_link: videoCallLink })
+          .eq("id", insertedData.id);
+      }
 
       // Send email notification
       try {
@@ -216,6 +219,7 @@ const BookAppointment = () => {
       }
 
       setAppointmentId(displayId);
+      setSuccess(true);
     } catch (error: any) {
       toast({ 
         title: "Booking failed", 
