@@ -134,7 +134,7 @@ const BookAppointment = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date || !timeSlot || !form.doctorId || !form.patientName || !form.mobile) {
+    if (!date || !timeSlot || !form.doctorId || !form.patientName || !form.mobile || !form.age || !form.gender || !form.maritalStatus || !form.address || !form.city || !form.pincode || !form.reason) {
       toast({ title: "Please fill all required fields", variant: "destructive" });
       return;
     }
