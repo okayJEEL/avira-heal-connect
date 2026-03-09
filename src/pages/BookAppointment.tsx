@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { format, isToday, isBefore, startOfDay } from "date-fns";
 import { CalendarIcon, CheckCircle, Video, Building2 } from "lucide-react";
 import emailjs from "@emailjs/browser";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { doctors } from "@/components/DoctorsSection";
@@ -72,12 +73,14 @@ const BookAppointment = () => {
     doctorId: preselectedDoctor,
     reason: "",
     consultationType: "opd",
+    email: "",
   });
   const [date, setDate] = useState<Date>();
   const [timeSlot, setTimeSlot] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [appointmentId, setAppointmentId] = useState("");
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
   const selectedDoctor = doctors.find((d) => d.id === form.doctorId);
 
@@ -86,15 +89,49 @@ const BookAppointment = () => {
     return form.isExisting === "yes" ? selectedDoctor.feeExisting : selectedDoctor.feeNew;
   }, [selectedDoctor, form.isExisting]);
 
+  // Fetch booked slots when date changes
+  useEffect(() => {
+    if (!date) return;
+    
+    const fetchBookedSlots = async () => {
+      const startOfSelectedDay = new Date(date);
+      startOfSelectedDay.setHours(0, 0, 0, 0);
+      const endOfSelectedDay = new Date(date);
+      endOfSelectedDay.setHours(23, 59, 59, 999);
+
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("time_slot")
+        .gte("time_slot", startOfSelectedDay.toISOString())
+        .lte("time_slot", endOfSelectedDay.toISOString())
+        .neq("status", "cancelled");
+      
+      if (!error && data) {
+        const slots = data.map(apt => format(new Date(apt.time_slot), "h:mm a"));
+        setBookedSlots(slots);
+      }
+    };
+
+    fetchBookedSlots();
+  }, [date]);
+
   const availableSlots = useMemo(() => {
     if (!date) return [];
     const now = new Date();
+    
+    let filteredSlots = allSlots;
+    
+    // Filter by time if today
     if (isToday(date)) {
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      return allSlots.filter((slot) => slotToMinutes(slot) > currentMinutes);
+      filteredSlots = allSlots.filter((slot) => slotToMinutes(slot) > currentMinutes);
     }
-    return allSlots;
-  }, [date]);
+    
+    // Filter out booked slots
+    filteredSlots = filteredSlots.filter(slot => !bookedSlots.includes(slot));
+    
+    return filteredSlots;
+  }, [date, bookedSlots]);
 
   const updateForm = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -109,35 +146,80 @@ const BookAppointment = () => {
 
     setSubmitting(true);
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
+      const newId = generateAppointmentId();
+      
+      // Create appointment date-time
+      const [time, ampm] = timeSlot.split(" ");
+      const [hours, minutes] = time.split(":");
+      let hour24 = parseInt(hours);
+      if (ampm === "PM" && hour24 !== 12) hour24 += 12;
+      if (ampm === "AM" && hour24 === 12) hour24 = 0;
+      
+      const appointmentDateTime = new Date(date);
+      appointmentDateTime.setHours(hour24, parseInt(minutes), 0, 0);
+
+      const videoCallLink = form.consultationType === "video" 
+        ? `https://meet.jit.si/avira-hospital-${newId}` 
+        : null;
+
+      // Save to database
+      const { error: dbError } = await supabase
+        .from("appointments")
+        .insert({
+          id: newId,
           patient_name: form.patientName,
-          patient_type: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
           mobile: form.mobile,
-          age: form.age,
-          gender: form.gender,
-          marital_status: form.maritalStatus,
-          address: `${form.address}, ${form.city} - ${form.pincode}`,
-          doctor_name: selectedDoctor?.name,
-          specialization: selectedDoctor?.specialty,
-          date: format(date, "dd/MM/yyyy"),
-          time_slot: timeSlot,
-          reason: form.reason,
-          fee: `₹${fee}`,
-          to_email: "avirahospital@gmail.com",
-        },
-        EMAILJS_PUBLIC_KEY
-      );
-      const newId = generateAppointmentId();
+          age: form.age ? parseInt(form.age) : null,
+          gender: form.gender || null,
+          department: selectedDoctor?.specialty || null,
+          time_slot: appointmentDateTime.toISOString(),
+          fee: fee,
+          notes: form.reason || null,
+          consultation_type: form.consultationType,
+          video_call_link: videoCallLink,
+          email: form.email || null,
+          address: `${form.address}, ${form.city} - ${form.pincode}`.trim().replace(/^, /, '').replace(/ - $/, '') || null,
+          patient_type: form.isExisting,
+          status: "pending"
+        });
+
+      if (dbError) throw dbError;
+
+      // Send email notification
+      try {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            patient_name: form.patientName,
+            patient_type: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
+            mobile: form.mobile,
+            age: form.age,
+            gender: form.gender,
+            marital_status: form.maritalStatus,
+            address: `${form.address}, ${form.city} - ${form.pincode}`,
+            doctor_name: selectedDoctor?.name,
+            specialization: selectedDoctor?.specialty,
+            date: format(date, "dd/MM/yyyy"),
+            time_slot: timeSlot,
+            reason: form.reason,
+            fee: `₹${fee}`,
+            to_email: "avirahospital@gmail.com",
+          },
+          EMAILJS_PUBLIC_KEY
+        );
+      } catch (emailError) {
+        console.warn("Email notification failed:", emailError);
+      }
+
       setAppointmentId(newId);
       setSuccess(true);
-    } catch {
-      toast({ title: "Failed to send confirmation email. Your appointment is still noted.", variant: "destructive" });
-      const newId = generateAppointmentId();
-      setAppointmentId(newId);
-      setSuccess(true);
+    } catch (error: any) {
+      toast({ 
+        title: "Booking failed", 
+        description: error.message || "Please try again",
+        variant: "destructive" 
+      });
     } finally {
       setSubmitting(false);
     }
@@ -307,6 +389,10 @@ const BookAppointment = () => {
               <div>
                 <Label>Mobile Number *</Label>
                 <Input required type="tel" placeholder="Mobile number" value={form.mobile} onChange={(e) => updateForm("mobile", e.target.value)} />
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input type="email" placeholder="Email address" value={form.email} onChange={(e) => updateForm("email", e.target.value)} />
               </div>
               <div>
                 <Label>Age</Label>

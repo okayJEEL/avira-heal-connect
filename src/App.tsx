@@ -12,7 +12,10 @@ import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 import VideoCallRoom from "./pages/VideoCallRoom";
+import StaffLogin from "./pages/StaffLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 import EmergencyButton from "./components/EmergencyButton";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +34,8 @@ const App = () => (
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/video-call/:roomId" element={<VideoCallRoom />} />
+          <Route path="/staff-login" element={<StaffLogin />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <EmergencyButton />
