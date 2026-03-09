@@ -21,11 +21,6 @@ import AppointmentSlip from "@/components/AppointmentSlip";
 
 const EMAILJS_PUBLIC_KEY = "zN2bb9xlC65XS2wwg";
 
-function generateAppointmentId(): string {
-  const year = new Date().getFullYear();
-  const random = Math.floor(100000 + Math.random() * 900000);
-  return `AH-${year}-${random}`;
-}
 const EMAILJS_SERVICE_ID = "service_rdjqrbt";
 const EMAILJS_TEMPLATE_ID = "template_nh07zjn";
 
