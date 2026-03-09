@@ -65,13 +65,48 @@ const AdminDashboard = () => {
     navigate("/staff-login");
   };
 
+  const updateAppointmentStatus = async (id: string, status: string) => {
+    try {
+      const { error } = await supabase
+        .from("appointments")
+        .update({ status })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setAppointments(prev => 
+        prev.map(apt => apt.id === id ? { ...apt, status } : apt)
+      );
+
+      toast({
+        title: "Success",
+        description: `Appointment ${status} successfully`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const statusColor = (status: string) => {
     switch (status) {
       case "confirmed": return "default";
       case "cancelled": return "destructive";
-      default: return "secondary";
+      case "completed": return "secondary";
+      default: return "outline";
     }
   };
+
+  const filteredAppointments = appointments.filter(apt => {
+    const matchesSearch = apt.patient_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          apt.mobile.includes(searchTerm) ||
+                          apt.department?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || apt.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="min-h-screen bg-muted">
