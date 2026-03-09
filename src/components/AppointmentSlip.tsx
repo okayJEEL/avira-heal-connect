@@ -209,7 +209,7 @@ const AppointmentSlip = ({
                 padding: "10px 14px",
               }}>
                 <div style={{ fontSize: "12px", fontWeight: 700, color: "#166534", marginBottom: "4px" }}>
-                  🎥 Video Call Link
+                  🎥 Video Consultation — Join as Patient
                 </div>
                 <a
                   href={videoCallLink}
@@ -225,8 +225,9 @@ const AppointmentSlip = ({
                 >
                   {videoCallLink}
                 </a>
-                <div style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
-                  Join at your scheduled time. Share this link with your doctor if needed.
+                <div style={{ fontSize: "11px", color: "#64748b", marginTop: "6px", lineHeight: "1.6" }}>
+                  📌 Click the link above at your scheduled time to join the video call.<br />
+                  Your doctor will be hosting the meeting and waiting for you.
                 </div>
               </div>
             )}

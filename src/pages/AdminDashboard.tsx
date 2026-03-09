@@ -335,17 +335,24 @@ const AdminDashboard = () => {
                               <span>• {apt.patient_type === "existing" ? "Existing" : "New"} Patient</span>
                             </div>
                             {apt.video_call_link && (
-                              <div className="mt-2 p-2 bg-primary/5 border border-primary/20 rounded-lg">
-                                <p className="text-xs text-muted-foreground mb-1">Video Call Link:</p>
-                                <a 
-                                  href={apt.video_call_link} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-sm text-primary hover:underline flex items-center gap-1"
-                                >
-                                  <Video className="w-3 h-3" />
-                                  Join Meeting
-                                </a>
+                              <div className="mt-2 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                                <div className="flex items-center justify-between flex-wrap gap-2">
+                                  <div>
+                                    <p className="text-xs font-medium text-muted-foreground mb-1">Video Consultation Room</p>
+                                    <p className="text-xs text-muted-foreground">Same link is shared with the patient</p>
+                                  </div>
+                                  <a 
+                                    href={apt.video_call_link} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                  >
+                                    <Button size="sm" className="bg-green-600 hover:bg-green-700 gap-1.5">
+                                      <Video className="w-4 h-4" />
+                                      Start Meeting (Host)
+                                    </Button>
+                                  </a>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-2 break-all">{apt.video_call_link}</p>
                               </div>
                             )}
                             {apt.notes && (
