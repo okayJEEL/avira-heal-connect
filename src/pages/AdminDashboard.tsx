@@ -22,6 +22,12 @@ interface Appointment {
   status: string;
   fee: number | null;
   created_at: string;
+  consultation_type: string | null;
+  video_call_link: string | null;
+  email: string | null;
+  address: string | null;
+  patient_type: string | null;
+  notes: string | null;
 }
 
 const AdminDashboard = () => {
