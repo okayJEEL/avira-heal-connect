@@ -11,6 +11,7 @@ import OurDoctors from "./pages/OurDoctors";
 import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
+import VideoCallRoom from "./pages/VideoCallRoom";
 import EmergencyButton from "./components/EmergencyButton";
 
 const queryClient = new QueryClient();
