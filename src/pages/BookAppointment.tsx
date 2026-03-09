@@ -130,11 +130,13 @@ const BookAppointment = () => {
         },
         EMAILJS_PUBLIC_KEY
       );
-      setAppointmentId(generateAppointmentId());
+      const newId = generateAppointmentId();
+      setAppointmentId(newId);
       setSuccess(true);
     } catch {
       toast({ title: "Failed to send confirmation email. Your appointment is still noted.", variant: "destructive" });
-      setAppointmentId(generateAppointmentId());
+      const newId = generateAppointmentId();
+      setAppointmentId(newId);
       setSuccess(true);
     } finally {
       setSubmitting(false);
