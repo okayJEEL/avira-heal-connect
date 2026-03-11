@@ -527,7 +527,7 @@ const AdminDashboard = () => {
                             </div>
                           )}
 
-                          {!isDoctor && apt.status === "confirmed" && (
+                          {apt.status === "confirmed" && (
                             <div className="mt-4 pt-4 border-t border-border">
                               <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => updateAppointmentStatus(apt.id, "completed")}>
                                 Mark Completed
