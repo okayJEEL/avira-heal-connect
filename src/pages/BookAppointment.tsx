@@ -84,9 +84,9 @@ const BookAppointment = () => {
     return form.isExisting === "yes" ? selectedDoctor.feeExisting : selectedDoctor.feeNew;
   }, [selectedDoctor, form.isExisting]);
 
-  // Fetch booked slots when date changes
+  // Fetch booked slots when date or doctor changes
   useEffect(() => {
-    if (!date) return;
+    if (!date || !form.doctorId) return;
     
     const fetchBookedSlots = async () => {
       const startOfSelectedDay = new Date(date);
@@ -96,10 +96,11 @@ const BookAppointment = () => {
 
       const { data, error } = await supabase
         .from("appointments")
-        .select("time_slot")
+        .select("time_slot, status")
         .gte("time_slot", startOfSelectedDay.toISOString())
         .lte("time_slot", endOfSelectedDay.toISOString())
-        .neq("status", "cancelled");
+        .eq("doctor_id", form.doctorId)
+        .in("status", ["pending", "confirmed", "completed"]);
       
       if (!error && data) {
         const slots = data.map(apt => format(new Date(apt.time_slot), "h:mm a"));
@@ -108,7 +109,19 @@ const BookAppointment = () => {
     };
 
     fetchBookedSlots();
-  }, [date]);
+
+    // Realtime subscription for instant slot updates
+    const channel = supabase
+      .channel(`slots-${form.doctorId}-${format(date, "yyyy-MM-dd")}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "appointments" },
+        () => { fetchBookedSlots(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [date, form.doctorId]);
 
   const availableSlots = useMemo(() => {
     if (!date) return [];
