@@ -181,6 +181,7 @@ const BookAppointment = () => {
           age: form.age ? parseInt(form.age) : null,
           gender: form.gender || null,
           department: selectedDoctor?.specialty || null,
+          doctor_id: form.doctorId || null,
           time_slot: appointmentDateTime.toISOString(),
           fee: fee,
           notes: form.reason || null,
