@@ -514,8 +514,8 @@ const AdminDashboard = () => {
                             )}
                           </div>
 
-                          {/* Only admins can confirm/cancel/complete */}
-                          {!isDoctor && apt.status === "pending" && (
+                          {/* Confirm/Cancel for pending appointments */}
+                          {apt.status === "pending" && (
                             <div className="flex gap-2 mt-4 pt-4 border-t border-border">
                               <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => updateAppointmentStatus(apt.id, "confirmed")}>
                                 <CheckCircle className="w-4 h-4 mr-1" /> Confirm
@@ -527,9 +527,12 @@ const AdminDashboard = () => {
                           )}
 
                           {apt.status === "confirmed" && (
-                            <div className="mt-4 pt-4 border-t border-border">
+                            <div className="flex gap-2 mt-4 pt-4 border-t border-border">
                               <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => updateAppointmentStatus(apt.id, "completed")}>
                                 Mark Completed
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => updateAppointmentStatus(apt.id, "cancelled")}>
+                                <X className="w-4 h-4 mr-1" /> Cancel
                               </Button>
                             </div>
                           )}
