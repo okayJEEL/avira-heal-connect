@@ -56,9 +56,7 @@ const StaffLogin = () => {
       <div className="bg-card rounded-2xl shadow-lg border border-border w-full max-w-md overflow-hidden">
         {/* Header */}
         <div className="text-center pt-8 pb-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
-            <span className="text-primary-foreground font-bold text-lg">A+</span>
-          </div>
+          <img src={aviraLogo} alt="Avira Hospital Logo" className="w-14 h-14 rounded-full object-contain mx-auto mb-4" />
           <h1 className="text-2xl font-heading font-bold text-foreground">Avira Hospital</h1>
           <p className="text-muted-foreground text-sm mt-1">Staff & Admin Portal</p>
         </div>
