@@ -171,9 +171,7 @@ const AdminDashboard = () => {
       <header className="bg-card border-b sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between py-3 px-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
-              A+
-            </div>
+            <img src={aviraLogo} alt="Avira Hospital Logo" className="w-8 h-8 rounded-lg object-contain" />
             <h1 className="text-lg font-heading font-bold text-primary">Avira Hospital</h1>
             <span className="text-sm text-muted-foreground">
               {isDoctor ? "Doctor Portal" : "Admin Dashboard"}
