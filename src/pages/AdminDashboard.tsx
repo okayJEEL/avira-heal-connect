@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import drVivekImg from "@/assets/dr-vivek-admin.jpg";
 import drPreetiImg from "@/assets/dr-preeti-admin.jpg";
+import aviraLogo from "@/assets/avira-logo.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
