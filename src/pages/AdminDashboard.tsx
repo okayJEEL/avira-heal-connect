@@ -98,6 +98,29 @@ const AdminDashboard = () => {
       setLoading(false);
     };
     fetchData();
+
+    // Real-time subscription for live updates
+    const channel = supabase
+      .channel("admin-appointments")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "appointments" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setAppointments(prev => [payload.new as Appointment, ...prev]);
+            toast({ title: "🔔 New Appointment", description: `${(payload.new as Appointment).patient_name} booked an appointment` });
+          } else if (payload.eventType === "UPDATE") {
+            setAppointments(prev =>
+              prev.map(apt => apt.id === (payload.new as Appointment).id ? payload.new as Appointment : apt)
+            );
+          } else if (payload.eventType === "DELETE") {
+            setAppointments(prev => prev.filter(apt => apt.id !== (payload.old as any).id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [toast]);
 
   const handleLogout = async () => {
