@@ -257,7 +257,7 @@ const AdminDashboard = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5, duration: 0.4 }}
                       >
-                        <p className="text-2xl font-bold">{todayAppointments.length}</p>
+                        <p className="text-2xl font-bold">{todayAppointments.filter(a => a.status !== "cancelled").length}</p>
                         <p className="text-xs opacity-80">Today's Patients</p>
                       </motion.div>
                       <motion.div 
@@ -266,7 +266,7 @@ const AdminDashboard = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6, duration: 0.4 }}
                       >
-                        <p className="text-2xl font-bold">{upcomingAppointments.length}</p>
+                        <p className="text-2xl font-bold">{upcomingAppointments.filter(a => a.status !== "completed").length}</p>
                         <p className="text-xs opacity-80">Upcoming</p>
                       </motion.div>
                       <motion.div 
@@ -276,9 +276,20 @@ const AdminDashboard = () => {
                         transition={{ delay: 0.7, duration: 0.4 }}
                       >
                         <p className="text-2xl font-bold">
-                          {doctorFilteredAppointments.filter(a => a.consultation_type === "video").length}
+                          {doctorFilteredAppointments.filter(a => a.consultation_type === "video" && a.status !== "cancelled").length}
                         </p>
                         <p className="text-xs opacity-80">Video Consults</p>
+                      </motion.div>
+                      <motion.div 
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.8, duration: 0.4 }}
+                      >
+                        <p className="text-2xl font-bold">
+                          {doctorFilteredAppointments.filter(a => a.status === "completed").length}
+                        </p>
+                        <p className="text-xs opacity-80">Completed</p>
                       </motion.div>
                     </div>
                   </motion.div>
