@@ -321,41 +321,63 @@ const BookAppointment = () => {
             </div>
 
             {/* Date & Time */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label>Appointment Date *</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : "Pick a date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(d) => { setDate(d); setTimeSlot(""); }}
-                      disabled={(d) => isBefore(startOfDay(d), startOfDay(new Date())) || d.getDay() === 0}
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div>
-                <Label>Time Slot *</Label>
-                <Select value={timeSlot} onValueChange={setTimeSlot} disabled={!date}>
-                  <SelectTrigger><SelectValue placeholder={date ? "Choose a slot" : "Select date first"} /></SelectTrigger>
-                  <SelectContent>
-                    {availableSlots.length === 0 && (
-                      <SelectItem value="none" disabled>No slots available</SelectItem>
-                    )}
-                    {availableSlots.map((slot) => (
-                      <SelectItem key={slot} value={slot}>{slot}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <Label>Appointment Date *</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal mt-1", !date && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(d) => { setDate(d); setTimeSlot(""); }}
+                    disabled={(d) => isBefore(startOfDay(d), startOfDay(new Date())) || d.getDay() === 0}
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Time Slots */}
+            <div>
+              <Label>Time Slot *</Label>
+              {!date ? (
+                <p className="text-sm text-muted-foreground mt-2">Please select a date first</p>
+              ) : availableSlots.length === 0 ? (
+                <p className="text-sm text-destructive mt-2">No slots available for this date</p>
+              ) : (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
+                  {allSlots.map((slot) => {
+                    const isBooked = bookedSlots.includes(slot);
+                    const isUnavailable = !availableSlots.includes(slot);
+                    const isSelected = timeSlot === slot;
+                    return (
+                      <button
+                        key={slot}
+                        type="button"
+                        disabled={isUnavailable}
+                        onClick={() => setTimeSlot(slot)}
+                        className={cn(
+                          "px-3 py-2.5 rounded-lg text-sm font-medium border transition-all duration-200",
+                          isSelected
+                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
+                            : isBooked
+                              ? "bg-destructive/10 text-destructive/50 border-destructive/20 cursor-not-allowed line-through"
+                              : isUnavailable
+                                ? "bg-muted text-muted-foreground/40 border-border cursor-not-allowed"
+                                : "bg-card text-foreground border-border hover:border-primary hover:bg-primary/5 cursor-pointer"
+                        )}
+                      >
+                        {slot}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Patient Type */}
