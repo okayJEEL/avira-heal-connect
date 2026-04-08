@@ -1,64 +1,50 @@
 
 
-## SMS Notification for Appointment Booking
+## Plan: WhatsApp Notifications via MSG91
 
-### Recommended SMS Service: **Twilio**
+### What you'll get
+Patients receive WhatsApp messages on three events:
+1. **Booking received** — immediately after booking
+2. **Appointment confirmed** — when doctor confirms
+3. **Appointment cancelled** — when doctor cancels
 
-Twilio is the industry standard for programmatic SMS. Here's why it's the best fit:
-- Pay-per-message pricing (starts ~$0.0079/SMS for India)
-- Reliable delivery with status tracking
-- Simple REST API, works perfectly with backend functions
-- Free trial with $15 credit to test
+### Steps
 
-### How It Works
+**1. Store MSG91 API credentials**
+- Use the `add_secret` tool to request your **MSG91 Auth Key** and **Integrated Number** (WhatsApp sender number)
+- Secrets: `MSG91_AUTH_KEY`, `MSG91_SENDER_NUMBER`
 
-```text
-Patient books appointment
-        │
-        ▼
-  Backend function triggered
-        │
-        ▼
-  SMS #1: "Booking Received"
-  (sent immediately)
-        │
-        ▼
-  Admin confirms from dashboard
-        │
-        ▼
-  SMS #2: "Appointment Confirmed"
-  (sent on status change)
-```
+**2. Create edge function: `send-whatsapp`**
+- Accepts: `to`, `patientName`, `doctorName`, `department`, `date`, `time`, `fee`, `messageType` (booking/confirmed/cancelled)
+- Calls MSG91's WhatsApp API (`https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/`)
+- Formats message based on `messageType`
+- Input validation with Zod, CORS headers included
 
-### SMS Message Templates
+**3. Update `BookAppointment.tsx`**
+- After successful DB insert, fire-and-forget call to `send-whatsapp` with type `booking`
+- Won't block the booking flow if WhatsApp fails
 
-**SMS 1 — Booking Received:**
-> Dear {name}, your appointment request with {doctor} on {date} at {time} has been received. Consultation fee: ₹{fee}. We will confirm shortly. — Avira Hospital
+**4. Update `AdminDashboard.tsx`**
+- After `updateAppointmentStatus()` succeeds for "confirmed" or "cancelled", call `send-whatsapp` with the appropriate type
+- Fetch appointment details (patient name, mobile, etc.) from the existing state
 
-**SMS 2 — Appointment Confirmed:**
-> Dear {name}, your appointment with {doctor} on {date} at {time} is confirmed. Please arrive 15 mins early. For queries, call us. — Avira Hospital
+### Message Templates
 
-### Implementation Plan
+| Event | WhatsApp Message |
+|-------|-----------------|
+| Booking | "Dear {name}, your appointment with {doctor} ({dept}) on {date} at {time} has been received. Fee: ₹{fee}. We will confirm shortly. — Avira Hospital" |
+| Confirmed | "Dear {name}, your appointment with {doctor} on {date} at {time} is confirmed. Please arrive 15 mins early. — Avira Hospital" |
+| Cancelled | "Dear {name}, your appointment with {doctor} on {date} at {time} has been cancelled. Please rebook if needed. — Avira Hospital" |
 
-1. **Create a backend function** (`send-sms`) that accepts patient details and message type, then calls the Twilio API to send the SMS.
+### What you need to do
+1. Create an MSG91 account at [msg91.com](https://msg91.com)
+2. Enable WhatsApp channel and get your **Auth Key** from Settings → Auth Key
+3. Set up a WhatsApp sender number and register message templates (MSG91 guides you through DLT/WhatsApp Business approval)
+4. Share credentials when prompted — I'll securely store them
 
-2. **Trigger SMS on booking** — After successfully inserting the appointment into the database in `BookAppointment.tsx`, call the `send-sms` function with type "booking".
-
-3. **Trigger SMS on confirmation** — When an admin updates appointment status to "confirmed" (from the admin dashboard), call the `send-sms` function with type "confirmed".
-
-4. **Store appointment in database** — Update `BookAppointment.tsx` to insert appointments into the database (currently it only sends an email via EmailJS).
-
-### Setup Steps (What You Need To Do)
-
-1. **Create a Twilio account** at [twilio.com](https://www.twilio.com)
-2. Get your **Account SID**, **Auth Token**, and a **Twilio phone number** (or use Twilio's Messaging Service for India)
-3. For India, you may need to register a sender ID and DLT template — Twilio guides you through this
-4. Share the credentials with me and I'll securely store them and wire everything up
-
-### Technical Details
-
-- Backend function will be created as an edge function using Twilio's REST API
-- Secrets needed: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
-- The booking flow will be updated to save appointments to the database before sending SMS
-- RLS policies already allow anonymous inserts into the appointments table
+### Technical details
+- Edge function uses MSG91 WhatsApp API directly (no connector needed)
+- Phone numbers auto-formatted to include `+91` country code
+- Non-blocking: booking/confirmation succeeds even if WhatsApp fails
+- Secrets stored securely as backend secrets, never exposed to frontend
 
