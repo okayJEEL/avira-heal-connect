@@ -13,16 +13,16 @@ import blog4 from "@/assets/blog-4.jpg";
 const blogPosts = [
   {
     id: 1,
-    title: "Understanding Preventive Healthcare: Why Regular Check-ups Save Lives",
+    title: "Understanding Diabetes: Early Signs, Prevention & Modern Management",
     excerpt:
-      "Preventive healthcare is the cornerstone of a long, healthy life. Many serious conditions — including diabetes, hypertension, and certain cancers — can be detected early through routine screenings, dramatically improving treatment outcomes and survival rates.",
+      "Diabetes is one of the most prevalent lifestyle diseases in India, affecting over 77 million adults. Early detection through regular blood sugar monitoring and lifestyle changes can prevent serious complications like kidney damage, vision loss, and nerve disorders.",
     content:
-      "Regular health check-ups allow doctors to catch warning signs before they become critical. Blood pressure monitoring, blood sugar tests, cholesterol panels, and cancer screenings are simple procedures that take minimal time but can add years to your life. At our hospital, we recommend annual comprehensive health check-ups for adults over 30 and bi-annual visits for those with a family history of chronic diseases.",
+      "At our clinic, we see patients who have lived with undiagnosed diabetes for years. Simple fasting blood sugar and HbA1c tests can reveal pre-diabetic conditions early. Combined with dietary modifications, regular exercise, and modern medication, diabetes can be managed effectively. We also offer personalised diabetes management plans including continuous glucose monitoring guidance and insulin therapy when needed.",
     image: blog1,
     date: "April 5, 2026",
     readTime: "5 min read",
-    author: "Dr. Rajesh Sharma",
-    category: "Preventive Care",
+    author: "Dr. Vivek Sidhapura",
+    category: "Diabetes Care",
   },
   {
     id: 2,
@@ -30,38 +30,90 @@ const blogPosts = [
     excerpt:
       "Cardiovascular disease remains the leading cause of death worldwide. Recognising early warning signs — chest discomfort, shortness of breath, unusual fatigue — and seeking immediate medical attention can be the difference between life and death.",
     content:
-      "Our cardiology department sees hundreds of patients every month, and the most common regret we hear is 'I wish I had come sooner.' Symptoms like persistent chest tightness, pain radiating to the left arm, dizziness during physical activity, and swelling in the legs should never be dismissed. Modern cardiology offers minimally invasive diagnostics — from stress tests to angiograms — that can pinpoint issues quickly.",
+      "Symptoms like persistent chest tightness, pain radiating to the left arm, dizziness during physical activity, and swelling in the legs should never be dismissed. Patients with diabetes and hypertension are at especially high risk. Regular ECG, lipid profile tests, and blood pressure monitoring are essential. Our general medicine practice includes comprehensive cardiac risk assessments as part of routine check-ups.",
     image: blog2,
     date: "March 28, 2026",
     readTime: "7 min read",
-    author: "Dr. Priya Mehta",
-    category: "Cardiology",
+    author: "Dr. Vivek Sidhapura",
+    category: "Heart & General Medicine",
   },
   {
     id: 3,
-    title: "Joint Pain After 40? What an Orthopaedic Specialist Wants You to Know",
+    title: "Monsoon Diseases: Protecting Yourself from Malaria, Dengue & Typhoid",
     excerpt:
-      "Age-related joint pain is common, but it doesn't have to limit your life. From physiotherapy and lifestyle modifications to advanced joint replacement surgery, modern orthopaedics offers a wide spectrum of solutions tailored to every stage.",
+      "Every monsoon season brings a spike in vector-borne and waterborne diseases. Malaria, dengue, chikungunya, and typhoid can be life-threatening if not treated promptly. Know the symptoms and when to seek medical help.",
     content:
-      "Osteoarthritis affects nearly 15% of Indians over the age of 40. Early intervention — weight management, low-impact exercises, and anti-inflammatory nutrition — can slow progression significantly. When conservative treatments aren't enough, procedures like arthroscopy and robotic-assisted joint replacements provide excellent outcomes with faster recovery. Our orthopaedic team uses the latest techniques to get patients back on their feet.",
+      "High fever lasting more than 2 days, body aches, rashes, and low platelet counts are red flags during monsoon. Dengue in particular can escalate rapidly. Preventive measures include eliminating stagnant water, using mosquito nets, and drinking purified water. If symptoms appear, early diagnosis through blood tests and timely treatment with proper hydration and medication can prevent complications. We provide rapid diagnostic testing and emergency care for all seasonal infections.",
     image: blog3,
     date: "March 15, 2026",
     readTime: "6 min read",
-    author: "Dr. Anil Verma",
-    category: "Orthopaedics",
+    author: "Dr. Vivek Sidhapura",
+    category: "Seasonal Health",
   },
   {
     id: 4,
-    title: "Childhood Vaccinations: A Complete Guide for New Parents",
+    title: "PRP Hair Treatment: A Non-Surgical Solution for Hair Loss & Baldness",
     excerpt:
-      "Vaccinations are one of the most effective ways to protect your child from life-threatening diseases. Our paediatrics team breaks down the recommended immunisation schedule, addresses common concerns, and explains why timely vaccination matters.",
+      "Platelet-Rich Plasma (PRP) therapy is revolutionising hair restoration. This minimally invasive treatment uses your own blood's growth factors to stimulate dormant hair follicles, promoting natural hair regrowth without surgery.",
     content:
-      "The Indian Academy of Pediatrics (IAP) recommends a comprehensive vaccination schedule starting from birth. Vaccines for Hepatitis B, BCG, Polio, DPT, MMR, and newer ones like Rotavirus and Pneumococcal are critical in the first two years. Despite myths circulating online, vaccines are rigorously tested and have saved millions of lives globally. Our paediatric department provides personalised vaccination calendars and gentle administration techniques to make the experience stress-free for both parents and children.",
+      "PRP involves drawing a small amount of blood, processing it to concentrate the platelets, and injecting it into the scalp. The growth factors in PRP activate stem cells in the hair follicle, leading to thicker, stronger hair over 3-6 months. It's ideal for early-stage hair thinning and can be combined with medicated treatments for best results. Sessions are quick, virtually painless, and require no downtime. We offer customised PRP protocols based on individual hair loss patterns.",
     image: blog4,
     date: "March 2, 2026",
-    readTime: "8 min read",
-    author: "Dr. Sneha Kulkarni",
-    category: "Paediatrics",
+    readTime: "5 min read",
+    author: "Dr. Preeti Sidhapura",
+    category: "Aesthetic Medicine",
+  },
+  {
+    id: 5,
+    title: "Laser Hair Removal: Everything You Need to Know Before Your First Session",
+    excerpt:
+      "Tired of shaving, waxing, and threading? Laser hair removal offers a long-lasting solution for unwanted hair. Learn how the procedure works, what to expect, and why it's one of the most sought-after aesthetic treatments today.",
+    content:
+      "Laser hair removal works by targeting the melanin in hair follicles with concentrated light, disabling their ability to regrow. Most patients need 6-8 sessions for optimal results. The procedure is safe for most skin types and can be used on the face, underarms, legs, bikini area, and more. Mild redness post-treatment subsides within hours. We use advanced diode laser technology that ensures effective results with minimal discomfort and no scarring.",
+    image: blog2,
+    date: "February 20, 2026",
+    readTime: "4 min read",
+    author: "Dr. Preeti Sidhapura",
+    category: "Aesthetic Medicine",
+  },
+  {
+    id: 6,
+    title: "Acne Scars & Dark Circles: Modern Treatments That Actually Work",
+    excerpt:
+      "Acne scars and dark circles can significantly impact self-confidence. From chemical peels and micro-needling to advanced laser therapy, modern dermatology offers effective solutions to restore clear, radiant skin.",
+    content:
+      "Acne scars come in different forms — ice pick, boxcar, and rolling scars — each requiring a tailored approach. Chemical peels with glycolic or salicylic acid work well for superficial scarring, while micro-needling with radiofrequency targets deeper scars. For dark circles, PRP under-eye treatment and hyaluronic acid fillers deliver visible improvement. We also recommend medical-grade skincare routines to maintain results long-term. Every treatment plan is customised after a thorough skin analysis.",
+    image: blog1,
+    date: "February 10, 2026",
+    readTime: "6 min read",
+    author: "Dr. Preeti Sidhapura",
+    category: "Cosmetology",
+  },
+  {
+    id: 7,
+    title: "Botox & Thread Fillers: Myths vs. Facts About Anti-Ageing Treatments",
+    excerpt:
+      "Anti-ageing treatments like Botox and thread fillers are surrounded by misconceptions. When performed by a qualified cosmetologist, these procedures are safe, effective, and deliver natural-looking results without surgery.",
+    content:
+      "Botox works by temporarily relaxing facial muscles that cause wrinkles, particularly on the forehead and around the eyes. Results last 4-6 months and look completely natural when done correctly. Thread fillers, on the other hand, lift and tighten sagging skin using dissolvable threads that also stimulate collagen production. Combined with permanent makeup techniques for brows and lips, these treatments can take years off your appearance. We offer detailed consultations to set realistic expectations and create personalised anti-ageing plans.",
+    image: blog3,
+    date: "January 25, 2026",
+    readTime: "5 min read",
+    author: "Dr. Preeti Sidhapura",
+    category: "Cosmetology",
+  },
+  {
+    id: 8,
+    title: "Managing Blood Pressure & Thyroid: A Comprehensive Guide",
+    excerpt:
+      "Hypertension and thyroid disorders often go undetected for years. Regular screening, proper medication, and lifestyle adjustments are key to keeping these silent conditions under control and preventing long-term organ damage.",
+    content:
+      "High blood pressure damages blood vessels gradually, increasing the risk of stroke, heart attack, and kidney failure. Similarly, thyroid imbalances — both hypo and hyper — affect metabolism, energy levels, mood, and weight. Simple blood tests (TSH, T3, T4 for thyroid; regular BP monitoring) can catch these early. Treatment typically involves daily medication, dietary changes (low-sodium diet for BP, iodine-balanced diet for thyroid), and regular follow-ups. We provide comprehensive metabolic health packages that cover all essential screenings.",
+    image: blog4,
+    date: "January 12, 2026",
+    readTime: "7 min read",
+    author: "Dr. Vivek Sidhapura",
+    category: "General Medicine",
   },
 ];
 
