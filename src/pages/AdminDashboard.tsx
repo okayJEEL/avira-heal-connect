@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Calendar, Users, Activity, MessageCircle, Monitor, CheckCircle, X, Video, Building2, Search, Filter, Stethoscope, Clock, Heart } from "lucide-react";
+import { LogOut, Calendar, Users, Activity, MessageCircle, Monitor, CheckCircle, X, Video, Building2, Search, Filter, Stethoscope, Clock, Heart, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
