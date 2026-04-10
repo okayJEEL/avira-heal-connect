@@ -315,7 +315,7 @@ const AdminDashboard = () => {
         )}
 
         {/* Quick Nav Buttons */}
-        <div className={`grid gap-4 ${isDoctor ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 md:grid-cols-4"}`}>
+        <div className={`grid gap-4 ${isDoctor ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 md:grid-cols-5"}`}>
           {[
             { label: "Appointments", icon: Calendar, tab: "appointments", show: true },
             { label: "Doctors", icon: Users, tab: "doctors", show: !isDoctor },
