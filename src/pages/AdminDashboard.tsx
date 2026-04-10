@@ -7,13 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Calendar, Users, Activity, MessageCircle, Monitor, CheckCircle, X, Video, Building2, Search, Filter, Stethoscope, Clock, Heart } from "lucide-react";
+import { LogOut, Calendar, Users, Activity, MessageCircle, Monitor, CheckCircle, X, Video, Building2, Search, Filter, Stethoscope, Clock, Heart, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
+import BlogManagement from "@/components/admin/BlogManagement";
 
 interface Appointment {
   id: string;
@@ -314,11 +315,12 @@ const AdminDashboard = () => {
         )}
 
         {/* Quick Nav Buttons */}
-        <div className={`grid gap-4 ${isDoctor ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 md:grid-cols-4"}`}>
+        <div className={`grid gap-4 ${isDoctor ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 md:grid-cols-5"}`}>
           {[
             { label: "Appointments", icon: Calendar, tab: "appointments", show: true },
             { label: "Doctors", icon: Users, tab: "doctors", show: !isDoctor },
             { label: "Messages", icon: MessageCircle, tab: "messages", show: true },
+            { label: "Blog", icon: FileText, tab: "blog", show: !isDoctor },
             { label: "View Website", icon: Monitor, tab: "website", show: true },
           ].filter(i => i.show).map((item) => (
             <button
@@ -345,7 +347,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full mb-6 ${isDoctor ? "grid-cols-3" : "grid-cols-4"}`}>
+          <TabsList className={`grid w-full mb-6 ${isDoctor ? "grid-cols-3" : "grid-cols-5"}`}>
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {isDoctor ? "My Appointments" : "Appointments"}
@@ -360,6 +362,12 @@ const AdminDashboard = () => {
               <MessageCircle className="w-4 h-4" />
               Messages
             </TabsTrigger>
+            {!isDoctor && (
+              <TabsTrigger value="blog" className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Blog
+              </TabsTrigger>
+            )}
             <TabsTrigger value="website" className="flex items-center gap-2">
               <Monitor className="w-4 h-4" />
               View Website
@@ -640,6 +648,12 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {!isDoctor && (
+            <TabsContent value="blog">
+              <BlogManagement />
+            </TabsContent>
+          )}
 
           <TabsContent value="website">
             <Card>
