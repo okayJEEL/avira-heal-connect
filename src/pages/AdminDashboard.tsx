@@ -372,9 +372,6 @@ const AdminDashboard = () => {
               <Monitor className="w-4 h-4" />
               View Website
             </TabsTrigger>
-              <Monitor className="w-4 h-4" />
-              View Website
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="appointments" className="space-y-6">
