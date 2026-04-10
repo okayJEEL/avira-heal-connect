@@ -649,7 +649,13 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="website">
+          {!isDoctor && (
+            <TabsContent value="blog">
+              <BlogManagement />
+            </TabsContent>
+          )}
+
+
             <Card>
               <CardHeader>
                 <CardTitle>View Website</CardTitle>
