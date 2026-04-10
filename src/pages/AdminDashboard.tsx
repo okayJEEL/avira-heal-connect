@@ -320,6 +320,7 @@ const AdminDashboard = () => {
             { label: "Appointments", icon: Calendar, tab: "appointments", show: true },
             { label: "Doctors", icon: Users, tab: "doctors", show: !isDoctor },
             { label: "Messages", icon: MessageCircle, tab: "messages", show: true },
+            { label: "Blog", icon: FileText, tab: "blog", show: !isDoctor },
             { label: "View Website", icon: Monitor, tab: "website", show: true },
           ].filter(i => i.show).map((item) => (
             <button
