@@ -347,7 +347,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full mb-6 ${isDoctor ? "grid-cols-3" : "grid-cols-4"}`}>
+          <TabsList className={`grid w-full mb-6 ${isDoctor ? "grid-cols-3" : "grid-cols-5"}`}>
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {isDoctor ? "My Appointments" : "Appointments"}
@@ -362,7 +362,16 @@ const AdminDashboard = () => {
               <MessageCircle className="w-4 h-4" />
               Messages
             </TabsTrigger>
+            {!isDoctor && (
+              <TabsTrigger value="blog" className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Blog
+              </TabsTrigger>
+            )}
             <TabsTrigger value="website" className="flex items-center gap-2">
+              <Monitor className="w-4 h-4" />
+              View Website
+            </TabsTrigger>
               <Monitor className="w-4 h-4" />
               View Website
             </TabsTrigger>
