@@ -5,10 +5,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import blog1 from "@/assets/blog-1.jpg";
-import blog2 from "@/assets/blog-2.jpg";
-import blog3 from "@/assets/blog-3.jpg";
-import blog4 from "@/assets/blog-4.jpg";
 
 const blogPosts = [
   {
@@ -18,7 +14,6 @@ const blogPosts = [
       "Diabetes is one of the most prevalent lifestyle diseases in India, affecting over 77 million adults. Early detection through regular blood sugar monitoring and lifestyle changes can prevent serious complications like kidney damage, vision loss, and nerve disorders.",
     content:
       "At our clinic, we see patients who have lived with undiagnosed diabetes for years. Simple fasting blood sugar and HbA1c tests can reveal pre-diabetic conditions early. Combined with dietary modifications, regular exercise, and modern medication, diabetes can be managed effectively. We also offer personalised diabetes management plans including continuous glucose monitoring guidance and insulin therapy when needed.",
-    image: blog1,
     date: "April 5, 2026",
     readTime: "5 min read",
     author: "Dr. Vivek Sidhapura",
@@ -31,7 +26,6 @@ const blogPosts = [
       "Cardiovascular disease remains the leading cause of death worldwide. Recognising early warning signs — chest discomfort, shortness of breath, unusual fatigue — and seeking immediate medical attention can be the difference between life and death.",
     content:
       "Symptoms like persistent chest tightness, pain radiating to the left arm, dizziness during physical activity, and swelling in the legs should never be dismissed. Patients with diabetes and hypertension are at especially high risk. Regular ECG, lipid profile tests, and blood pressure monitoring are essential. Our general medicine practice includes comprehensive cardiac risk assessments as part of routine check-ups.",
-    image: blog2,
     date: "March 28, 2026",
     readTime: "7 min read",
     author: "Dr. Vivek Sidhapura",
@@ -44,7 +38,6 @@ const blogPosts = [
       "Every monsoon season brings a spike in vector-borne and waterborne diseases. Malaria, dengue, chikungunya, and typhoid can be life-threatening if not treated promptly. Know the symptoms and when to seek medical help.",
     content:
       "High fever lasting more than 2 days, body aches, rashes, and low platelet counts are red flags during monsoon. Dengue in particular can escalate rapidly. Preventive measures include eliminating stagnant water, using mosquito nets, and drinking purified water. If symptoms appear, early diagnosis through blood tests and timely treatment with proper hydration and medication can prevent complications. We provide rapid diagnostic testing and emergency care for all seasonal infections.",
-    image: blog3,
     date: "March 15, 2026",
     readTime: "6 min read",
     author: "Dr. Vivek Sidhapura",
@@ -57,7 +50,6 @@ const blogPosts = [
       "Platelet-Rich Plasma (PRP) therapy is revolutionising hair restoration. This minimally invasive treatment uses your own blood's growth factors to stimulate dormant hair follicles, promoting natural hair regrowth without surgery.",
     content:
       "PRP involves drawing a small amount of blood, processing it to concentrate the platelets, and injecting it into the scalp. The growth factors in PRP activate stem cells in the hair follicle, leading to thicker, stronger hair over 3-6 months. It's ideal for early-stage hair thinning and can be combined with medicated treatments for best results. Sessions are quick, virtually painless, and require no downtime. We offer customised PRP protocols based on individual hair loss patterns.",
-    image: blog4,
     date: "March 2, 2026",
     readTime: "5 min read",
     author: "Dr. Preeti Sidhapura",
@@ -70,7 +62,7 @@ const blogPosts = [
       "Tired of shaving, waxing, and threading? Laser hair removal offers a long-lasting solution for unwanted hair. Learn how the procedure works, what to expect, and why it's one of the most sought-after aesthetic treatments today.",
     content:
       "Laser hair removal works by targeting the melanin in hair follicles with concentrated light, disabling their ability to regrow. Most patients need 6-8 sessions for optimal results. The procedure is safe for most skin types and can be used on the face, underarms, legs, bikini area, and more. Mild redness post-treatment subsides within hours. We use advanced diode laser technology that ensures effective results with minimal discomfort and no scarring.",
-    image: blog2,
+    
     date: "February 20, 2026",
     readTime: "4 min read",
     author: "Dr. Preeti Sidhapura",
@@ -83,7 +75,7 @@ const blogPosts = [
       "Acne scars and dark circles can significantly impact self-confidence. From chemical peels and micro-needling to advanced laser therapy, modern dermatology offers effective solutions to restore clear, radiant skin.",
     content:
       "Acne scars come in different forms — ice pick, boxcar, and rolling scars — each requiring a tailored approach. Chemical peels with glycolic or salicylic acid work well for superficial scarring, while micro-needling with radiofrequency targets deeper scars. For dark circles, PRP under-eye treatment and hyaluronic acid fillers deliver visible improvement. We also recommend medical-grade skincare routines to maintain results long-term. Every treatment plan is customised after a thorough skin analysis.",
-    image: blog1,
+    
     date: "February 10, 2026",
     readTime: "6 min read",
     author: "Dr. Preeti Sidhapura",
@@ -96,7 +88,7 @@ const blogPosts = [
       "Anti-ageing treatments like Botox and thread fillers are surrounded by misconceptions. When performed by a qualified cosmetologist, these procedures are safe, effective, and deliver natural-looking results without surgery.",
     content:
       "Botox works by temporarily relaxing facial muscles that cause wrinkles, particularly on the forehead and around the eyes. Results last 4-6 months and look completely natural when done correctly. Thread fillers, on the other hand, lift and tighten sagging skin using dissolvable threads that also stimulate collagen production. Combined with permanent makeup techniques for brows and lips, these treatments can take years off your appearance. We offer detailed consultations to set realistic expectations and create personalised anti-ageing plans.",
-    image: blog3,
+    
     date: "January 25, 2026",
     readTime: "5 min read",
     author: "Dr. Preeti Sidhapura",
@@ -109,7 +101,7 @@ const blogPosts = [
       "Hypertension and thyroid disorders often go undetected for years. Regular screening, proper medication, and lifestyle adjustments are key to keeping these silent conditions under control and preventing long-term organ damage.",
     content:
       "High blood pressure damages blood vessels gradually, increasing the risk of stroke, heart attack, and kidney failure. Similarly, thyroid imbalances — both hypo and hyper — affect metabolism, energy levels, mood, and weight. Simple blood tests (TSH, T3, T4 for thyroid; regular BP monitoring) can catch these early. Treatment typically involves daily medication, dietary changes (low-sodium diet for BP, iodine-balanced diet for thyroid), and regular follow-ups. We provide comprehensive metabolic health packages that cover all essential screenings.",
-    image: blog4,
+    
     date: "January 12, 2026",
     readTime: "7 min read",
     author: "Dr. Vivek Sidhapura",
@@ -180,16 +172,7 @@ const Blog = () => {
               setExpandedId(expandedId === blogPosts[0].id ? null : blogPosts[0].id)
             }
           >
-            <div className="grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden bg-card shadow-lg border border-border hover:shadow-xl transition-shadow duration-300">
-              <div className="overflow-hidden h-64 md:h-auto">
-                <img
-                  src={blogPosts[0].image}
-                  alt={blogPosts[0].title}
-                  width={800}
-                  height={512}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
+            <div className="rounded-2xl overflow-hidden bg-card shadow-lg border border-border hover:shadow-xl transition-shadow duration-300">
               <div className="p-6 md:p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-3">
                   <Badge className="bg-primary/10 text-primary border-0 hover:bg-primary/20">
@@ -244,16 +227,6 @@ const Blog = () => {
                   setExpandedId(expandedId === post.id ? null : post.id)
                 }
               >
-                <div className="overflow-hidden h-48">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    width={800}
-                    height={512}
-                    loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <Badge className="bg-primary/10 text-primary border-0 text-[11px] hover:bg-primary/20">
