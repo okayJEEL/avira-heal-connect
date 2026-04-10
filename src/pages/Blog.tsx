@@ -172,16 +172,7 @@ const Blog = () => {
               setExpandedId(expandedId === blogPosts[0].id ? null : blogPosts[0].id)
             }
           >
-            <div className="grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden bg-card shadow-lg border border-border hover:shadow-xl transition-shadow duration-300">
-              <div className="overflow-hidden h-64 md:h-auto">
-                <img
-                  src={blogPosts[0].image}
-                  alt={blogPosts[0].title}
-                  width={800}
-                  height={512}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
+            <div className="rounded-2xl overflow-hidden bg-card shadow-lg border border-border hover:shadow-xl transition-shadow duration-300">
               <div className="p-6 md:p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-3">
                   <Badge className="bg-primary/10 text-primary border-0 hover:bg-primary/20">
@@ -236,16 +227,6 @@ const Blog = () => {
                   setExpandedId(expandedId === post.id ? null : post.id)
                 }
               >
-                <div className="overflow-hidden h-48">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    width={800}
-                    height={512}
-                    loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <Badge className="bg-primary/10 text-primary border-0 text-[11px] hover:bg-primary/20">
