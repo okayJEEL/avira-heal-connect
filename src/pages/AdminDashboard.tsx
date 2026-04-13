@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import BlogManagement from "@/components/admin/BlogManagement";
+import MessagesHub from "@/components/admin/MessagesHub";
 
 interface Appointment {
   id: string;
@@ -639,14 +640,7 @@ const AdminDashboard = () => {
           )}
 
           <TabsContent value="messages">
-            <Card>
-              <CardHeader>
-                <CardTitle>Messages</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Message management features coming soon...</p>
-              </CardContent>
-            </Card>
+            <MessagesHub isAdmin={userRole === "admin"} />
           </TabsContent>
 
           {!isDoctor && (

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, Facebook, Instagram, Send, Clock } from "lucide-react";
 import emailjs from "@emailjs/browser";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,15 @@ const Contact = () => {
     e.preventDefault();
     setSending(true);
     try {
+      // Save to database
+      await supabase.from("contact_messages").insert({
+        name: form.name,
+        email: form.email || null,
+        phone: form.phone || null,
+        subject: form.subject || null,
+        message: form.message,
+      });
+      // Also send via EmailJS
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
         patient_name: form.name,
         mobile: form.phone,
