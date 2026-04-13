@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          priority: string
+          title: string
+        }
+        Insert: {
+          author_id: string
+          author_name: string
+          content: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          priority?: string
+          title: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          priority?: string
+          title?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           address: string | null
@@ -112,6 +145,116 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          replied_at: string | null
+          reply_text: string | null
+          status: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          replied_at?: string | null
+          reply_text?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          replied_at?: string | null
+          reply_text?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      internal_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+          sender_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          sender_id: string
+          sender_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string
+          sender_name?: string
+        }
+        Relationships: []
+      }
+      patient_notifications: {
+        Row: {
+          appointment_id: string | null
+          email: string | null
+          id: string
+          message: string
+          mobile: string | null
+          notification_type: string
+          patient_name: string
+          sent_at: string
+          sent_by: string
+          sent_via: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          email?: string | null
+          id?: string
+          message: string
+          mobile?: string | null
+          notification_type?: string
+          patient_name: string
+          sent_at?: string
+          sent_by: string
+          sent_via?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          email?: string | null
+          id?: string
+          message?: string
+          mobile?: string | null
+          notification_type?: string
+          patient_name?: string
+          sent_at?: string
+          sent_by?: string
+          sent_via?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_notifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
