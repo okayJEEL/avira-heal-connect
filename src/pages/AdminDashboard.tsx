@@ -90,7 +90,7 @@ const AdminDashboard = () => {
       const { data, error } = await supabase
         .from("appointments")
         .select("*")
-        .order("time_slot", { ascending: false });
+        .order("created_at", { ascending: false });
 
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
