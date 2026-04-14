@@ -130,28 +130,6 @@ const AdminDashboard = () => {
     navigate("/staff-login");
   };
 
-  const sendWhatsAppNotification = (apt: Appointment, event: string) => {
-    const doctorName = apt.department === "Aesthetic Physician & Cosmetologist"
-      ? "Dr. Preeti Siddhpura"
-      : "Dr. Vivek Siddhpura";
-
-    const whatsappUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-whatsapp`;
-    fetch(whatsappUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mobile: apt.mobile,
-        patient_name: apt.patient_name,
-        doctor_name: doctorName,
-        department: apt.department || "General",
-        date: format(new Date(apt.time_slot), "dd/MM/yyyy"),
-        time: format(new Date(apt.time_slot), "hh:mm a"),
-        fee: String(apt.fee || 0),
-        event,
-      }),
-    }).catch((err) => console.warn("WhatsApp notification failed:", err));
-  };
-
   const updateAppointmentStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
@@ -159,12 +137,6 @@ const AdminDashboard = () => {
         .update({ status })
         .eq("id", id);
       if (error) throw error;
-
-      const apt = appointments.find(a => a.id === id);
-      if (apt && (status === "confirmed" || status === "cancelled")) {
-        sendWhatsAppNotification(apt, status);
-      }
-
       setAppointments(prev =>
         prev.map(apt => apt.id === id ? { ...apt, status } : apt)
       );
