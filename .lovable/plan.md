@@ -1,32 +1,35 @@
 
 
-## Plan: WhatsApp Notifications via Twilio
+## Plan: WhatsApp Notifications via Twilio (Sandbox First)
 
-### What will be built
-Automated WhatsApp messages sent to patients at three key moments: booking, confirmation, and cancellation.
+### Approach
+Start with the Twilio WhatsApp Sandbox number (`+14155238886`) hardcoded in the edge function. When you're ready to go live, you just update one secret value — no code changes needed.
 
-### Files to create/edit
+### Important: Sandbox Limitation
+Recipients must first send a "join" message (e.g. "join <two-words>") to **+1 415 523 8886** on WhatsApp before they can receive messages. You'll find your specific join phrase in Twilio Console → Messaging → Try it out → Send a WhatsApp message.
+
+### Implementation
 
 **1. Create `supabase/functions/send-whatsapp/index.ts`**
-- Edge function that accepts POST with: `mobile`, `patient_name`, `doctor_name`, `department`, `date`, `time`, `fee`, `event`
-- Builds message from template based on event type (booking/confirmed/cancelled)
-- Sends via Twilio gateway with `whatsapp:` prefix on phone numbers
-- CORS headers, input validation with checks
-- No JWT required (booking is called by anonymous users)
+- Edge function accepting POST with: `mobile`, `patient_name`, `doctor_name`, `department`, `date`, `time`, `fee`, `event`
+- Uses Twilio connector gateway (`https://connector-gateway.lovable.dev/twilio/Messages.json`)
+- Sends with `From: whatsapp:+14155238886` (sandbox) and `To: whatsapp:+91{mobile}`
+- Three message templates for booking, confirmed, cancelled events
+- CORS headers, input validation
 
 **2. Edit `src/pages/BookAppointment.tsx`**
-- After successful DB insert (line ~195), fire-and-forget call to the `send-whatsapp` edge function with `event: "booking"`
-- Pass patient name, doctor name, department, date, time, fee
+- After successful DB insert, fire-and-forget call to `send-whatsapp` with `event: "booking"`
 
 **3. Edit `src/pages/AdminDashboard.tsx`**
-- In `updateAppointmentStatus` (line ~133), after successful status update to "confirmed" or "cancelled", call the edge function with appointment details
-- Need to look up the appointment data from state to get patient mobile, doctor name, etc.
+- After status change to "confirmed" or "cancelled", call `send-whatsapp` with the corresponding event type
 
-### Message Templates
-- **Booking**: "Dear {name}, your appointment with {doctor} ({dept}) on {date} at {time} has been received. Fee: ₹{fee}. We will confirm shortly. — Avira Hospital"
-- **Confirmed**: "Dear {name}, your appointment with {doctor} on {date} at {time} is confirmed. Please arrive 15 mins early. — Avira Hospital"
-- **Cancelled**: "Dear {name}, your appointment with {doctor} on {date} at {time} has been cancelled. Please rebook if needed. — Avira Hospital"
+### Switching to Production Later
+When ready, we'll:
+1. Store your own WhatsApp Business number as a secret (`TWILIO_WHATSAPP_FROM`)
+2. Update the edge function to read from the secret instead of the hardcoded sandbox number
 
-### Important note
-You'll need to provide your Twilio WhatsApp-enabled phone number (the "From" number). I'll add a prompt for that during implementation, or you can use Twilio's WhatsApp Sandbox number for testing.
+### Files
+- Create: `supabase/functions/send-whatsapp/index.ts`
+- Edit: `src/pages/BookAppointment.tsx`
+- Edit: `src/pages/AdminDashboard.tsx`
 
