@@ -221,6 +221,23 @@ const BookAppointment = () => {
         console.warn("Email notification failed:", emailError);
       }
 
+      // Fire-and-forget WhatsApp notification
+      const whatsappUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-whatsapp`;
+      fetch(whatsappUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile: form.mobile,
+          patient_name: form.patientName,
+          doctor_name: selectedDoctor?.name || "",
+          department: selectedDoctor?.specialty || "",
+          date: format(date, "dd/MM/yyyy"),
+          time: timeSlot,
+          fee: String(fee),
+          event: "booking",
+        }),
+      }).catch((err) => console.warn("WhatsApp notification failed:", err));
+
       setAppointmentId(displayId);
       setSuccess(true);
     } catch (error: any) {
