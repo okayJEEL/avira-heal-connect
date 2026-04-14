@@ -527,7 +527,7 @@ const AdminDashboard = () => {
                               </span>
                               <span>• {apt.patient_type === "existing" ? "Existing" : "New"} Patient</span>
                             </div>
-                            {apt.video_call_link && apt.status !== "completed" && (
+                            {apt.video_call_link && apt.status !== "completed" && apt.status !== "cancelled" && (
                               <div className="mt-2 p-3 bg-primary/5 border border-primary/20 rounded-lg">
                                 <div className="flex items-center justify-between flex-wrap gap-2">
                                   <div>
@@ -547,6 +547,11 @@ const AdminDashboard = () => {
                             {apt.video_call_link && apt.status === "completed" && (
                               <div className="mt-2 p-3 bg-muted/50 border border-border rounded-lg">
                                 <p className="text-xs font-medium text-muted-foreground">✅ Video consultation completed</p>
+                              </div>
+                            )}
+                            {apt.video_call_link && apt.status === "cancelled" && (
+                              <div className="mt-2 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+                                <p className="text-xs font-medium text-muted-foreground">❌ Appointment cancelled</p>
                               </div>
                             )}
                             {apt.notes && (
