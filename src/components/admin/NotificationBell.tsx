@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Bell, Check, CheckCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 
@@ -16,21 +15,85 @@ interface StaffNotification {
   created_at: string;
 }
 
-const NOTIFICATION_SOUND_URL = "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbsGczHDdlj8Db0JNXMi9Rl7nM2qRlQjg4cYmzv8yniE41NU+Kqrq+x6F4TjM8aq2rv8KTc0o3R3uxxq12SC1Hg667wLuTbEUxPXuuvryQZ0MzP3O5ycWYdUU0Q4WtwsaRbUQ1PWy9zL+TdEwzP3S3ycaadUQ0Q4WtwsaRbEQ1PWy9zb+TdEwzP3S3ycaadUQ0Q4WtwsaRbEQ1PWy9zb+TdEwzP3S3ycaadUQ0QoWtwsaRbEQ1PWy9zb+TdEwzP3S3ycaadUQ0QoWtw==";
+/**
+ * Generate a short notification beep using Web Audio API.
+ * This avoids needing an external file and works reliably
+ * once the AudioContext has been unlocked by a user gesture.
+ */
+let audioCtx: AudioContext | null = null;
+
+function getAudioContext(): AudioContext {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  }
+  return audioCtx;
+}
+
+function unlockAudio() {
+  try {
+    const ctx = getAudioContext();
+    if (ctx.state === "suspended") ctx.resume();
+  } catch {}
+}
+
+function playNotificationSound() {
+  try {
+    const ctx = getAudioContext();
+    if (ctx.state === "suspended") {
+      ctx.resume();
+    }
+
+    // Create a pleasant two-tone notification beep
+    const now = ctx.currentTime;
+
+    // First tone
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(830, now);
+    gain1.gain.setValueAtTime(0.3, now);
+    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    osc1.connect(gain1).connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.15);
+
+    // Second tone (higher)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(1050, now + 0.12);
+    gain2.gain.setValueAtTime(0.3, now + 0.12);
+    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+    osc2.connect(gain2).connect(ctx.destination);
+    osc2.start(now + 0.12);
+    osc2.stop(now + 0.3);
+  } catch (e) {
+    console.warn("Could not play notification sound:", e);
+  }
+}
 
 const NotificationBell = ({ userId }: { userId: string }) => {
   const [notifications, setNotifications] = useState<StaffNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Unlock AudioContext on first user interaction with the page
+  useEffect(() => {
+    const handler = () => unlockAudio();
+    document.addEventListener("click", handler, { once: true });
+    document.addEventListener("keydown", handler, { once: true });
+    return () => {
+      document.removeEventListener("click", handler);
+      document.removeEventListener("keydown", handler);
+    };
+  }, []);
 
   // Request browser notification permission
   useEffect(() => {
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
     }
-    audioRef.current = new Audio(NOTIFICATION_SOUND_URL);
   }, []);
 
   // Close dropdown on outside click
@@ -45,7 +108,7 @@ const NotificationBell = ({ userId }: { userId: string }) => {
   }, []);
 
   // Fetch notifications
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     const { data } = await supabase
       .from("staff_notifications")
       .select("*")
@@ -56,12 +119,12 @@ const NotificationBell = ({ userId }: { userId: string }) => {
       setNotifications(data as StaffNotification[]);
       setUnreadCount((data as StaffNotification[]).filter((n) => !n.read).length);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) return;
     fetchNotifications();
-  }, [userId]);
+  }, [userId, fetchNotifications]);
 
   // Realtime subscription
   useEffect(() => {
@@ -81,12 +144,10 @@ const NotificationBell = ({ userId }: { userId: string }) => {
           setNotifications((prev) => [newNotif, ...prev].slice(0, 30));
           setUnreadCount((prev) => prev + 1);
 
-          // Play sound
-          try {
-            audioRef.current?.play();
-          } catch {}
+          // Play notification sound (Web Audio API)
+          playNotificationSound();
 
-          // Browser notification
+          // Browser notification when tab is hidden
           if (
             "Notification" in window &&
             Notification.permission === "granted" &&
@@ -116,7 +177,7 @@ const NotificationBell = ({ userId }: { userId: string }) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId]);
+  }, [userId, fetchNotifications]);
 
   const markAsRead = async (id: string) => {
     await supabase
@@ -148,7 +209,7 @@ const NotificationBell = ({ userId }: { userId: string }) => {
       >
         <Bell className="w-5 h-5 text-foreground" />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1">
+          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1 animate-pulse">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
