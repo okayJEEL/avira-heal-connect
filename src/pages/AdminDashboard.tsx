@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { motion } from "framer-motion";
 import BlogManagement from "@/components/admin/BlogManagement";
 import MessagesHub from "@/components/admin/MessagesHub";
+import NotificationBell from "@/components/admin/NotificationBell";
 
 interface Appointment {
   id: string;
