@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { motion } from "framer-motion";
 import BlogManagement from "@/components/admin/BlogManagement";
 import MessagesHub from "@/components/admin/MessagesHub";
+import NotificationBell from "@/components/admin/NotificationBell";
 
 interface Appointment {
   id: string;
@@ -57,6 +58,7 @@ const AdminDashboard = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,6 +75,7 @@ const AdminDashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       const email = user?.email || "";
       setUserEmail(email);
+      setUserId(user?.id || "");
       setUserName(user?.user_metadata?.full_name || email);
 
       // Fetch role
@@ -202,8 +205,9 @@ const AdminDashboard = () => {
               {isDoctor ? "Doctor Portal" : "Admin Dashboard"}
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground hidden sm:block">{userEmail}</span>
+            {userId && <NotificationBell userId={userId} />}
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" /> Logout
             </Button>
