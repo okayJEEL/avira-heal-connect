@@ -75,6 +75,7 @@ const AdminDashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       const email = user?.email || "";
       setUserEmail(email);
+      setUserId(user?.id || "");
       setUserName(user?.user_metadata?.full_name || email);
 
       // Fetch role
