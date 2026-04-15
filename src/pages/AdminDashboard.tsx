@@ -205,8 +205,9 @@ const AdminDashboard = () => {
               {isDoctor ? "Doctor Portal" : "Admin Dashboard"}
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground hidden sm:block">{userEmail}</span>
+            {userId && <NotificationBell userId={userId} />}
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" /> Logout
             </Button>
