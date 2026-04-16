@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import AppointmentSlip from "@/components/AppointmentSlip";
+import { generateAppointmentEmailHTML } from "@/utils/generateAppointmentEmailHTML";
 
 const EMAILJS_PUBLIC_KEY = "zN2bb9xlC65XS2wwg";
 
@@ -196,23 +197,30 @@ const BookAppointment = () => {
 
       // Send email notification
       try {
+        const emailHTML = generateAppointmentEmailHTML({
+          patientName: form.patientName,
+          patientType: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
+          mobile: form.mobile,
+          email: form.email || undefined,
+          age: form.age,
+          gender: form.gender,
+          maritalStatus: form.maritalStatus,
+          address: `${form.address}, ${form.city} - ${form.pincode}`,
+          doctorName: selectedDoctor?.name || "",
+          specialization: selectedDoctor?.specialty || "",
+          date: format(date, "dd/MM/yyyy"),
+          timeSlot: timeSlot,
+          reason: form.reason,
+          fee: fee,
+          consultationType: form.consultationType,
+          appointmentId: displayId,
+        });
+
         await emailjs.send(
           EMAILJS_SERVICE_ID,
           EMAILJS_TEMPLATE_ID,
           {
-            patient_name: form.patientName,
-            patient_type: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
-            mobile: form.mobile,
-            age: form.age,
-            gender: form.gender,
-            marital_status: form.maritalStatus,
-            address: `${form.address}, ${form.city} - ${form.pincode}`,
-            doctor_name: selectedDoctor?.name,
-            specialization: selectedDoctor?.specialty,
-            date: format(date, "dd/MM/yyyy"),
-            time_slot: timeSlot,
-            reason: form.reason,
-            fee: `₹${fee}`,
+            message_html: emailHTML,
             to_email: "avirahospital@gmail.com",
           },
           EMAILJS_PUBLIC_KEY
