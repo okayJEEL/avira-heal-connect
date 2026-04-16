@@ -220,6 +220,7 @@ const BookAppointment = () => {
           EMAILJS_SERVICE_ID,
           EMAILJS_TEMPLATE_ID,
           {
+            title: `New Appointment - ${form.patientName}`,
             message_html: emailHTML,
             to_email: "avirahospital@gmail.com",
           },
