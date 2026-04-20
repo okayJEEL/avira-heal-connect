@@ -30,12 +30,12 @@ const Gallery = () => {
       <section className="section-padding relative overflow-hidden">
         {/* Background image with subtle transparency */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
           style={{
             backgroundImage: "url('https://i.ibb.co/Q71yTvnJ/Final-front.png')",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-secondary/80 via-background/70 to-secondary/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-background/40 to-secondary/60" />
         <div className="container-custom max-w-5xl relative z-10">
           {/* Header */}
           <div className="text-center mb-12">
