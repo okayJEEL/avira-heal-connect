@@ -185,7 +185,7 @@ const Contact = () => {
             <h3 className="font-heading font-bold text-lg mb-4">Find Us on Map</h3>
             <div className="rounded-xl overflow-hidden h-[350px]">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.8!2d72.9519!3d22.5566!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e4e743b000001%3A0x1!2s210%2C%20R.S.Platinum%20Building%2C%20Bhalej%20Road%2C%20Ganesh%20Colony%2C%20Anand%2C%20Gujarat%20388001!5e0!3m2!1sen!2sin!4v1"
+                src="https://www.google.com/maps?q=Avira+Hospital,Bhalej+Road,Ganesh+Colony,Anand,Gujarat+388001&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
