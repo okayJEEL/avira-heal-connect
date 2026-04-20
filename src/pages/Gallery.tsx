@@ -32,11 +32,10 @@ const Gallery = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('https://i.ibb.co/mnL4vC6/Final-front.png')",
-            opacity: 0.45,
+            backgroundImage: "url('https://i.ibb.co/Q71yTvnJ/Final-front.png')",
           }}
         />
-        <div className="absolute inset-0 bg-section-alt/50" />
+        <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" />
         <div className="container-custom max-w-5xl relative z-10">
           {/* Header */}
           <div className="text-center mb-12">
