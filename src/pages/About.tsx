@@ -19,7 +19,14 @@ const About = () => {
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-center mb-2">About Avira Hospital</h1>
           <p className="text-center text-muted-foreground mb-12">Dedicated to providing exceptional healthcare</p>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card rounded-xl p-6 md:p-8 shadow-sm mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            whileHover={{ y: -4, boxShadow: "0 20px 40px -15px hsl(var(--primary) / 0.2)" }}
+            className="bg-card rounded-xl p-6 md:p-8 shadow-sm mb-10 transition-shadow"
+          >
             <h2 className="text-2xl font-heading font-bold mb-4">Our Story</h2>
             <p className="text-foreground/80 leading-relaxed">
               Avira Hospital was established with a vision to provide world-class healthcare services to our community.
@@ -40,15 +47,20 @@ const About = () => {
             {values.map((v, i) => (
               <motion.div
                 key={v.title}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-card rounded-xl p-5 shadow-sm"
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ delay: i * 0.1, duration: 0.5, type: "spring", stiffness: 180 }}
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="bg-card rounded-xl p-5 shadow-sm hover:shadow-lg transition-shadow group cursor-default"
               >
-                <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center mb-3">
+                <motion.div
+                  whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                  transition={{ duration: 0.4 }}
+                  className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center mb-3"
+                >
                   <v.icon className="w-5 h-5 text-primary" />
-                </div>
+                </motion.div>
                 <h3 className="font-heading font-bold mb-1">{v.title}</h3>
                 <p className="text-sm text-muted-foreground">{v.desc}</p>
               </motion.div>
@@ -56,20 +68,31 @@ const About = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-10">
-            <div className="bg-card rounded-xl p-6 shadow-sm">
-              <h3 className="text-xl font-heading font-bold mb-3 text-primary">Our Mission</h3>
-              <p className="text-sm text-foreground/80 leading-relaxed">
-                To provide accessible, affordable, and high-quality healthcare services to all members of our community,
-                while maintaining the highest standards of medical ethics and patient satisfaction.
-              </p>
-            </div>
-            <div className="bg-card rounded-xl p-6 shadow-sm">
-              <h3 className="text-xl font-heading font-bold mb-3 text-primary">Our Vision</h3>
-              <p className="text-sm text-foreground/80 leading-relaxed">
-                To be the leading healthcare provider in the region, recognized for clinical excellence, innovative
-                treatments, and compassionate care that improves the health and well-being of our patients.
-              </p>
-            </div>
+            {[
+              {
+                title: "Our Mission",
+                text: "To provide accessible, affordable, and high-quality healthcare services to all members of our community, while maintaining the highest standards of medical ethics and patient satisfaction.",
+                from: -40,
+              },
+              {
+                title: "Our Vision",
+                text: "To be the leading healthcare provider in the region, recognized for clinical excellence, innovative treatments, and compassionate care that improves the health and well-being of our patients.",
+                from: 40,
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, x: item.from }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: i * 0.15, ease: "easeOut" }}
+                whileHover={{ y: -5, boxShadow: "0 20px 40px -15px hsl(var(--primary) / 0.25)" }}
+                className="bg-card rounded-xl p-6 shadow-sm transition-shadow"
+              >
+                <h3 className="text-xl font-heading font-bold mb-3 text-primary">{item.title}</h3>
+                <p className="text-sm text-foreground/80 leading-relaxed">{item.text}</p>
+              </motion.div>
+            ))}
           </div>
 
           {/* Stats */}
@@ -79,11 +102,19 @@ const About = () => {
               { value: "2+", label: "Medical Experts" },
               { value: "10,000+", label: "Happy Patients" },
               { value: "24/7", label: "Emergency Care" },
-            ].map((s) => (
-              <div key={s.label} className="bg-primary rounded-xl p-5 text-center">
+            ].map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ delay: i * 0.1, type: "spring", stiffness: 200, damping: 15 }}
+                whileHover={{ y: -6, scale: 1.05 }}
+                className="bg-primary rounded-xl p-5 text-center shadow-md hover:shadow-xl transition-shadow cursor-default"
+              >
                 <p className="text-2xl font-heading font-extrabold text-primary-foreground">{s.value}</p>
                 <p className="text-sm text-primary-foreground/80">{s.label}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
