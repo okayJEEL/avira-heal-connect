@@ -271,8 +271,6 @@ const BookAppointment = () => {
         console.warn("Email notification failed:", emailError);
       }
 
-      setAppointmentId(displayId);
-      setSuccess(true);
     } catch (error: any) {
       toast({ 
         title: "Booking failed", 
