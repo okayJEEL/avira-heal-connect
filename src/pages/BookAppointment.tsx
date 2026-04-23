@@ -196,7 +196,11 @@ const BookAppointment = () => {
 
       if (dbError) throw dbError;
 
-      // Send email notification
+      // Show success page IMMEDIATELY so patient sees the slip
+      setAppointmentId(displayId);
+      setSuccess(true);
+
+      // Send emails in background (non-blocking) - failures won't affect UX
       try {
         const emailHTML = generateAppointmentEmailHTML({
           patientName: form.patientName,
