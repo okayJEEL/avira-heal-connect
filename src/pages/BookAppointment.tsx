@@ -20,6 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 import AppointmentSlip from "@/components/AppointmentSlip";
 import { generateAppointmentEmailHTML } from "@/utils/generateAppointmentEmailHTML";
 import { generatePatientEmailHTML } from "@/utils/generatePatientEmailHTML";
+import { generateDoctorEmailHTML } from "@/utils/generateDoctorEmailHTML";
+import { getDoctorEmail } from "@/utils/doctorEmailMap";
 
 const EMAILJS_PUBLIC_KEY = "zN2bb9xlC65XS2wwg";
 
@@ -265,6 +267,45 @@ const BookAppointment = () => {
             );
           } catch (patientEmailError) {
             console.warn("Patient email failed:", patientEmailError);
+          }
+        }
+
+        // Send notification email to the assigned doctor
+        const doctorEmail = getDoctorEmail(form.doctorId);
+        if (doctorEmail) {
+          try {
+            const doctorHTML = generateDoctorEmailHTML({
+              doctorName: selectedDoctor?.name || "",
+              patientName: form.patientName,
+              patientType: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
+              mobile: form.mobile,
+              email: form.email || undefined,
+              age: form.age,
+              gender: form.gender,
+              maritalStatus: form.maritalStatus,
+              address: `${form.address}, ${form.city} - ${form.pincode}`,
+              specialization: selectedDoctor?.specialty || "",
+              date: format(date, "dd/MM/yyyy"),
+              timeSlot: timeSlot,
+              reason: form.reason,
+              fee: fee,
+              consultationType: form.consultationType,
+              videoCallLink: videoCallLink,
+              appointmentId: displayId,
+            });
+
+            await emailjs.send(
+              EMAILJS_SERVICE_ID,
+              EMAILJS_TEMPLATE_ID,
+              {
+                title: `New Appointment - ${form.patientName}`,
+                message_html: doctorHTML,
+                to_email: doctorEmail,
+              },
+              EMAILJS_PUBLIC_KEY
+            );
+          } catch (doctorEmailError) {
+            console.warn("Doctor email failed:", doctorEmailError);
           }
         }
       } catch (emailError) {
