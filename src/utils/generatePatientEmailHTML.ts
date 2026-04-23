@@ -1,0 +1,136 @@
+interface PatientEmailData {
+  patientName: string;
+  mobile: string;
+  email?: string;
+  age: string;
+  gender: string;
+  address: string;
+  doctorName: string;
+  specialization: string;
+  date: string;
+  timeSlot: string;
+  reason: string;
+  fee: number;
+  consultationType: string;
+  videoCallLink?: string | null;
+  appointmentId: string;
+}
+
+export function generatePatientEmailHTML(data: PatientEmailData): string {
+  const logoUrl = "https://i.ibb.co/ZRjCdVqB/final-logo.png";
+  const consultLabel = data.consultationType === "video" ? "📹 Video Consultation" : "🏥 In-Person (OPD)";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:24px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+<!-- Header -->
+<tr><td style="background:linear-gradient(135deg,#2563EB,#1d4ed8);padding:28px 32px;text-align:center;">
+  <img src="${logoUrl}" alt="Avira Hospital" width="56" height="56" style="border-radius:50%;margin-bottom:10px;display:block;margin-left:auto;margin-right:auto;"/>
+  <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;">Avira Hospital</h1>
+  <p style="color:#bfdbfe;margin:4px 0 0;font-size:13px;">Your Appointment Has Been Received</p>
+</td></tr>
+
+<!-- Greeting -->
+<tr><td style="padding:24px 32px 8px;">
+  <p style="margin:0 0 8px;font-size:16px;color:#1e293b;"><strong>Dear ${data.patientName},</strong></p>
+  <p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">
+    Thank you for booking your appointment with Avira Hospital. We have received your request and our team will confirm it shortly. Below are your appointment details for your records.
+  </p>
+</td></tr>
+
+<!-- Appointment Details -->
+<tr><td style="padding:16px 32px 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+    <tr><td style="background:#93c5fd;padding:10px 16px;">
+      <strong style="color:#1e3a5f;font-size:14px;">📋 Appointment Details</strong>
+    </td></tr>
+    <tr><td style="padding:16px;background:#fffbeb;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;color:#334155;">
+        <tr><td style="padding:4px 0;width:45%;"><strong>Appointment ID:</strong></td><td style="padding:4px 0;">${data.appointmentId}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Consultation:</strong></td><td style="padding:4px 0;">${consultLabel}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Doctor:</strong></td><td style="padding:4px 0;">${data.doctorName}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Specialization:</strong></td><td style="padding:4px 0;">${data.specialization}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Date:</strong></td><td style="padding:4px 0;">${data.date}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Time Slot:</strong></td><td style="padding:4px 0;">${data.timeSlot}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Reason:</strong></td><td style="padding:4px 0;">${data.reason}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Fee:</strong></td><td style="padding:4px 0;">₹${data.fee} <span style="color:#64748b;font-size:12px;">(payable at hospital)</span></td></tr>
+      </table>
+    </td></tr>
+  </table>
+</td></tr>
+
+<!-- Patient Info -->
+<tr><td style="padding:16px 32px 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+    <tr><td style="background:#93c5fd;padding:10px 16px;">
+      <strong style="color:#1e3a5f;font-size:14px;">👤 Your Information</strong>
+    </td></tr>
+    <tr><td style="padding:16px;background:#eff6ff;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;color:#334155;">
+        <tr><td style="padding:4px 0;width:45%;"><strong>Name:</strong></td><td style="padding:4px 0;">${data.patientName}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Mobile:</strong></td><td style="padding:4px 0;">${data.mobile}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Age / Gender:</strong></td><td style="padding:4px 0;">${data.age} / ${data.gender}</td></tr>
+        <tr><td style="padding:4px 0;"><strong>Address:</strong></td><td style="padding:4px 0;">${data.address}</td></tr>
+      </table>
+    </td></tr>
+  </table>
+</td></tr>
+
+${data.consultationType === "video" && data.videoCallLink ? `
+<!-- Video Call Link -->
+<tr><td style="padding:16px 32px 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#ecfdf5;border:1px solid #86efac;border-radius:8px;overflow:hidden;">
+    <tr><td style="padding:18px;text-align:center;">
+      <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#166534;">🎥 Your Video Consultation Link</p>
+      <p style="margin:0 0 12px;font-size:12px;color:#15803d;">Click below at your scheduled time to join the call.</p>
+      <a href="${data.videoCallLink}" style="display:inline-block;background:#16a34a;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">Join Video Call</a>
+      <p style="margin:10px 0 0;font-size:11px;color:#166534;word-break:break-all;">${data.videoCallLink}</p>
+    </td></tr>
+  </table>
+</td></tr>` : ''}
+
+<!-- Important Info -->
+<tr><td style="padding:20px 32px 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;overflow:hidden;">
+    <tr><td style="padding:16px;">
+      <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#92400e;">📌 Important Instructions</p>
+      <ul style="margin:0;padding-left:20px;font-size:13px;color:#78350f;line-height:1.7;">
+        <li>Please arrive 15 minutes before your appointment time.</li>
+        <li>Bring previous medical records, prescriptions, and reports if any.</li>
+        <li>Your appointment is currently <strong>Pending Approval</strong>. Our team will confirm shortly.</li>
+        <li>For cancellations or rescheduling, please contact us at <strong>02692 354 201</strong>.</li>
+      </ul>
+    </td></tr>
+  </table>
+</td></tr>
+
+<!-- Hospital Info -->
+<tr><td style="padding:20px 32px 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;border-radius:8px;">
+    <tr><td style="padding:16px;text-align:center;">
+      <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#1e293b;">📍 Avira Hospital</p>
+      <p style="margin:0;font-size:12px;color:#475569;line-height:1.6;">
+        210, R.S.Platinum Building, Bhalej Road,<br/>Ganesh Colony, Anand, Gujarat 388001<br/>
+        📞 02692 354 201
+      </p>
+    </td></tr>
+  </table>
+</td></tr>
+
+<!-- Footer -->
+<tr><td style="padding:20px 32px 24px;text-align:center;">
+  <p style="margin:0 0 4px;font-size:12px;color:#94a3b8;">Thank you for choosing Avira Hospital</p>
+  <p style="margin:0;font-size:11px;color:#cbd5e1;">Care You Can Trust • Medicine & Skin Care</p>
+</td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}

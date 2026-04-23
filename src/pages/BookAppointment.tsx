@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import AppointmentSlip from "@/components/AppointmentSlip";
 import { generateAppointmentEmailHTML } from "@/utils/generateAppointmentEmailHTML";
+import { generatePatientEmailHTML } from "@/utils/generatePatientEmailHTML";
 
 const EMAILJS_PUBLIC_KEY = "zN2bb9xlC65XS2wwg";
 
@@ -226,6 +227,42 @@ const BookAppointment = () => {
           },
           EMAILJS_PUBLIC_KEY
         );
+
+        // Send confirmation email to patient if they provided an email
+        if (form.email && form.email.trim()) {
+          try {
+            const patientHTML = generatePatientEmailHTML({
+              patientName: form.patientName,
+              mobile: form.mobile,
+              email: form.email,
+              age: form.age,
+              gender: form.gender,
+              address: `${form.address}, ${form.city} - ${form.pincode}`,
+              doctorName: selectedDoctor?.name || "",
+              specialization: selectedDoctor?.specialty || "",
+              date: format(date, "dd/MM/yyyy"),
+              timeSlot: timeSlot,
+              reason: form.reason,
+              fee: fee,
+              consultationType: form.consultationType,
+              videoCallLink: videoCallLink,
+              appointmentId: displayId,
+            });
+
+            await emailjs.send(
+              EMAILJS_SERVICE_ID,
+              EMAILJS_TEMPLATE_ID,
+              {
+                title: `Appointment Confirmation - Avira Hospital`,
+                message_html: patientHTML,
+                to_email: form.email,
+              },
+              EMAILJS_PUBLIC_KEY
+            );
+          } catch (patientEmailError) {
+            console.warn("Patient email failed:", patientEmailError);
+          }
+        }
       } catch (emailError) {
         console.warn("Email notification failed:", emailError);
       }
