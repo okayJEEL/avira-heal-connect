@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import AppointmentSlip from "@/components/AppointmentSlip";
 import { generateAppointmentEmailHTML } from "@/utils/generateAppointmentEmailHTML";
+import { generatePatientEmailHTML } from "@/utils/generatePatientEmailHTML";
 
 const EMAILJS_PUBLIC_KEY = "zN2bb9xlC65XS2wwg";
 
