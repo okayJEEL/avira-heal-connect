@@ -203,8 +203,10 @@ const BookAppointment = () => {
       setSuccess(true);
 
       // Send emails in background (non-blocking) - failures won't affect UX
+      // EMAIL 1: Doctor notification → sent TO avirahospital@gmail.com
       try {
-        const emailHTML = generateAppointmentEmailHTML({
+        const doctorHTML = generateDoctorEmailHTML({
+          doctorName: selectedDoctor?.name || "",
           patientName: form.patientName,
           patientType: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
           mobile: form.mobile,
@@ -213,13 +215,13 @@ const BookAppointment = () => {
           gender: form.gender,
           maritalStatus: form.maritalStatus,
           address: `${form.address}, ${form.city} - ${form.pincode}`,
-          doctorName: selectedDoctor?.name || "",
           specialization: selectedDoctor?.specialty || "",
           date: format(date, "dd/MM/yyyy"),
           timeSlot: timeSlot,
           reason: form.reason,
           fee: fee,
           consultationType: form.consultationType,
+          videoCallLink: videoCallLink,
           appointmentId: displayId,
         });
 
@@ -228,88 +230,51 @@ const BookAppointment = () => {
           EMAILJS_TEMPLATE_ID,
           {
             title: `New Appointment - ${form.patientName}`,
-            message_html: emailHTML,
+            message_html: doctorHTML,
             to_email: "avirahospital@gmail.com",
+            reply_to: form.email || "avirahospital@gmail.com",
           },
           EMAILJS_PUBLIC_KEY
         );
+      } catch (doctorEmailError) {
+        console.warn("Doctor notification email failed:", doctorEmailError);
+      }
 
-        // Send confirmation email to patient if they provided an email
-        if (form.email && form.email.trim()) {
-          try {
-            const patientHTML = generatePatientEmailHTML({
-              patientName: form.patientName,
-              mobile: form.mobile,
-              email: form.email,
-              age: form.age,
-              gender: form.gender,
-              address: `${form.address}, ${form.city} - ${form.pincode}`,
-              doctorName: selectedDoctor?.name || "",
-              specialization: selectedDoctor?.specialty || "",
-              date: format(date, "dd/MM/yyyy"),
-              timeSlot: timeSlot,
-              reason: form.reason,
-              fee: fee,
-              consultationType: form.consultationType,
-              videoCallLink: videoCallLink,
-              appointmentId: displayId,
-            });
+      // EMAIL 2: Patient confirmation → sent TO patient (only if email provided)
+      if (form.email && form.email.trim()) {
+        try {
+          const patientHTML = generatePatientEmailHTML({
+            patientName: form.patientName,
+            mobile: form.mobile,
+            email: form.email,
+            age: form.age,
+            gender: form.gender,
+            address: `${form.address}, ${form.city} - ${form.pincode}`,
+            doctorName: selectedDoctor?.name || "",
+            specialization: selectedDoctor?.specialty || "",
+            date: format(date, "dd/MM/yyyy"),
+            timeSlot: timeSlot,
+            reason: form.reason,
+            fee: fee,
+            consultationType: form.consultationType,
+            videoCallLink: videoCallLink,
+            appointmentId: displayId,
+          });
 
-            await emailjs.send(
-              EMAILJS_SERVICE_ID,
-              EMAILJS_TEMPLATE_ID,
-              {
-                title: `Appointment Confirmation - Avira Hospital`,
-                message_html: patientHTML,
-                to_email: form.email,
-              },
-              EMAILJS_PUBLIC_KEY
-            );
-          } catch (patientEmailError) {
-            console.warn("Patient email failed:", patientEmailError);
-          }
+          await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_TEMPLATE_ID,
+            {
+              title: `Appointment Confirmation - Avira Hospital`,
+              message_html: patientHTML,
+              to_email: form.email,
+              reply_to: "avirahospital@gmail.com",
+            },
+            EMAILJS_PUBLIC_KEY
+          );
+        } catch (patientEmailError) {
+          console.warn("Patient confirmation email failed:", patientEmailError);
         }
-
-        // Send notification email to the assigned doctor
-        const doctorEmail = getDoctorEmail(form.doctorId);
-        if (doctorEmail) {
-          try {
-            const doctorHTML = generateDoctorEmailHTML({
-              doctorName: selectedDoctor?.name || "",
-              patientName: form.patientName,
-              patientType: form.isExisting === "yes" ? `Existing (ID: ${form.existingId})` : "New",
-              mobile: form.mobile,
-              email: form.email || undefined,
-              age: form.age,
-              gender: form.gender,
-              maritalStatus: form.maritalStatus,
-              address: `${form.address}, ${form.city} - ${form.pincode}`,
-              specialization: selectedDoctor?.specialty || "",
-              date: format(date, "dd/MM/yyyy"),
-              timeSlot: timeSlot,
-              reason: form.reason,
-              fee: fee,
-              consultationType: form.consultationType,
-              videoCallLink: videoCallLink,
-              appointmentId: displayId,
-            });
-
-            await emailjs.send(
-              EMAILJS_SERVICE_ID,
-              EMAILJS_TEMPLATE_ID,
-              {
-                title: `New Appointment - ${form.patientName}`,
-                message_html: doctorHTML,
-                to_email: doctorEmail,
-              },
-              EMAILJS_PUBLIC_KEY
-            );
-          } catch (doctorEmailError) {
-            console.warn("Doctor email failed:", doctorEmailError);
-          }
-        }
-      } catch (emailError) {
-        console.warn("Email notification failed:", emailError);
       }
 
     } catch (error: any) {
