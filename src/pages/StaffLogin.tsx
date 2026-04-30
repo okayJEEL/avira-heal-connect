@@ -52,8 +52,14 @@ const StaffLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)" }}>
-      <div className="bg-card rounded-2xl shadow-lg border border-border w-full max-w-md overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)" }}>
+      {/* Background image with subtle transparency (matches Gallery) */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+        style={{ backgroundImage: "url('https://i.ibb.co/Q71yTvnJ/Final-front.png')" }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-background/40 to-secondary/60" />
+      <div className="bg-card rounded-2xl shadow-lg border border-border w-full max-w-md overflow-hidden relative z-10">
         {/* Header */}
         <div className="text-center pt-8 pb-4">
           <img src={aviraLogo} alt="Avira Hospital Logo" className="w-14 h-14 rounded-full object-contain mx-auto mb-4" />
