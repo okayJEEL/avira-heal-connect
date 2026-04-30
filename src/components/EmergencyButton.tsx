@@ -1,9 +1,16 @@
 import { Phone, X } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 const EmergencyButton = () => {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+
+  // Hide on staff portal routes
+  if (location.pathname.startsWith("/staff-login") || location.pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
