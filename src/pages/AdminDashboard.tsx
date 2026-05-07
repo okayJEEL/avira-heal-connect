@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import BlogManagement from "@/components/admin/BlogManagement";
 import MessagesHub from "@/components/admin/MessagesHub";
 import NotificationBell from "@/components/admin/NotificationBell";
+import DoctorAvailability from "@/components/admin/DoctorAvailability";
 
 interface Appointment {
   id: string;
