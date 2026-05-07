@@ -654,6 +654,10 @@ const AdminDashboard = () => {
             </TabsContent>
           )}
 
+          <TabsContent value="availability">
+            <DoctorAvailability currentUserId={userId} isAdmin={userRole === "admin"} />
+          </TabsContent>
+
           <TabsContent value="messages">
             <MessagesHub isAdmin={userRole === "admin"} />
           </TabsContent>
