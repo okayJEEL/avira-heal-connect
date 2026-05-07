@@ -185,6 +185,81 @@ export type Database = {
         }
         Relationships: []
       }
+      doctor_date_overrides: {
+        Row: {
+          created_at: string
+          date: string
+          doctor_id: string
+          end_time: string | null
+          id: string
+          note: string | null
+          slot_minutes: number | null
+          start_time: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          doctor_id: string
+          end_time?: string | null
+          id?: string
+          note?: string | null
+          slot_minutes?: number | null
+          start_time?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          doctor_id?: string
+          end_time?: string | null
+          id?: string
+          note?: string | null
+          slot_minutes?: number | null
+          start_time?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      doctor_weekly_availability: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          end_time: string
+          id: string
+          is_available: boolean
+          slot_minutes: number
+          start_time: string
+          updated_at: string
+          weekday: number
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          slot_minutes?: number
+          start_time?: string
+          updated_at?: string
+          weekday: number
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          slot_minutes?: number
+          start_time?: string
+          updated_at?: string
+          weekday?: number
+        }
+        Relationships: []
+      }
       internal_messages: {
         Row: {
           created_at: string

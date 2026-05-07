@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import BlogManagement from "@/components/admin/BlogManagement";
 import MessagesHub from "@/components/admin/MessagesHub";
 import NotificationBell from "@/components/admin/NotificationBell";
+import DoctorAvailability from "@/components/admin/DoctorAvailability";
 
 interface Appointment {
   id: string;
@@ -320,10 +321,11 @@ const AdminDashboard = () => {
         )}
 
         {/* Quick Nav Buttons */}
-        <div className={`grid gap-4 ${isDoctor ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 md:grid-cols-5"}`}>
+        <div className={`grid gap-4 ${isDoctor ? "grid-cols-2 md:grid-cols-4" : "grid-cols-2 md:grid-cols-6"}`}>
           {[
             { label: "Appointments", icon: Calendar, tab: "appointments", show: true },
             { label: "Doctors", icon: Users, tab: "doctors", show: !isDoctor },
+            { label: "Availability", icon: Clock, tab: "availability", show: true },
             { label: "Messages", icon: MessageCircle, tab: "messages", show: true },
             { label: "Blog", icon: FileText, tab: "blog", show: !isDoctor },
             { label: "View Website", icon: Monitor, tab: "website", show: true },
@@ -352,7 +354,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full mb-6 ${isDoctor ? "grid-cols-3" : "grid-cols-5"}`}>
+          <TabsList className={`grid w-full mb-6 ${isDoctor ? "grid-cols-4" : "grid-cols-6"}`}>
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {isDoctor ? "My Appointments" : "Appointments"}
@@ -363,6 +365,10 @@ const AdminDashboard = () => {
                 Doctors
               </TabsTrigger>
             )}
+            <TabsTrigger value="availability" className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Availability
+            </TabsTrigger>
             <TabsTrigger value="messages" className="flex items-center gap-2">
               <MessageCircle className="w-4 h-4" />
               Messages
@@ -647,6 +653,10 @@ const AdminDashboard = () => {
               </div>
             </TabsContent>
           )}
+
+          <TabsContent value="availability">
+            <DoctorAvailability currentUserId={userId} isAdmin={userRole === "admin"} />
+          </TabsContent>
 
           <TabsContent value="messages">
             <MessagesHub isAdmin={userRole === "admin"} />

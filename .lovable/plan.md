@@ -1,48 +1,62 @@
+## Doctor Availability Calendar — Plan
 
+Add a scheduling tool inside the Staff Portal so admins (and each doctor for their own profile) can manage when each doctor is available. Patient booking flow stays untouched for now — this is admin-only visibility, ready to wire into bookings later.
 
-## Plan: Branded Email Template for Appointment Notifications
+### What you'll get
 
-### What Changes
+A new **"Availability"** tab in the Admin Dashboard with two parts per doctor:
 
-Replace the current plain EmailJS template with a professionally branded HTML email matching the reference image. The email sent to avirahospital@gmail.com on every new booking will include:
+1. **Weekly default schedule** — set working hours for each weekday (e.g. Mon–Sat 10:00 AM – 1:00 PM, 15-min slots). This applies automatically every week.
+2. **Date overrides** — pick a specific date on a calendar to:
+   - Mark the doctor as **on leave / unavailable** (block the whole day)
+   - Set **custom hours** for that day (overrides weekly default)
+   - **Add or remove individual slots**
 
-- **Blue header** with Avira Hospital logo and name
-- **Appointment Details** section (consultation type, doctor, date, time slot, reason)
-- **Patient Information** section (name, mobile, email, age/gender, city)
-- **Action Required** section with a "Review Appointment in Portal" button linking to the staff login page (`/staff-login`)
-- **Footer** with pending status note and hospital branding
+A monthly calendar view shows green (available), red (leave), amber (custom hours) markers per day, so the schedule is readable at a glance.
 
-### How It Works
+### Permissions
 
-Since the project already uses **EmailJS** for this email, we keep EmailJS but switch to a custom HTML template built inline in the code. EmailJS supports sending raw HTML via template variables.
+- **Admin** — can edit availability for any doctor
+- **Doctor** — sees only their own availability and can edit it
+- **Staff** — read-only (can see when doctors are available)
 
-**Files changed:**
+### How you'll use it
 
-1. **`src/pages/BookAppointment.tsx`** — Replace the current `emailjs.send()` call with one that passes a fully rendered HTML string as a template variable. The HTML will be constructed as a string matching the reference design:
-   - Blue gradient header with logo (`https://i.ibb.co/ZRjCdVqB/final-logo.png`)
-   - Appointment details in a light yellow card with blue header bar
-   - Patient info in a similar card
-   - Green "Action Required" card with a button linking to `https://avirahospital.in/staff-login` (or the current domain + `/staff-login`)
-   - Footer note about pending approval
+1. Open Staff Portal → **Availability** tab
+2. Pick a doctor (admins) or land on your own (doctors)
+3. **Weekly tab**: toggle each weekday on/off, set start time, end time, slot duration → Save
+4. **Calendar tab**: click any date → choose "Mark leave", "Custom hours", or "Reset to weekly default" → Save
 
-2. **EmailJS template update** — The EmailJS template (`template_nh07zjn`) needs to be updated on the EmailJS dashboard to simply render a `{{{html_content}}}` variable (triple braces for unescaped HTML). This is a one-time manual step on emailjs.com.
+### Booking impact
 
-### Alternative approach (recommended)
+Per your choice, **no change to the public booking page yet**. We'll wire patient slot availability to this calendar in a follow-up once you've populated some schedules and confirmed the UX.
 
-Instead of relying on EmailJS template rendering, we build the full HTML email string in the frontend code and pass it as a single variable to EmailJS. This gives us full control over the design without needing to edit the EmailJS dashboard template.
+---
 
-The EmailJS template just needs one variable like `{{{message_html}}}` that outputs raw HTML.
+### Technical details
 
-### Technical Details
+**New tables**
 
-- Build an `generateEmailHTML()` function that takes appointment data and returns a complete HTML email string
-- Uses inline CSS for email client compatibility
-- Colors: header `#2563EB` (primary blue), appointment section header `#93C5FD` bg, patient section same, action section `#BBF7D0` green bg
-- Button: `#2F855A` green background linking to staff portal login
-- Logo from the hosted URL
-- The "Review Appointment in Portal" button links to the published site's `/staff-login` route
+- `doctor_weekly_availability` — one row per doctor per weekday
+  - doctor_id, weekday (0–6), is_available, start_time, end_time, slot_minutes
+- `doctor_date_overrides` — one row per doctor per overridden date
+  - doctor_id, date, type ('leave' | 'custom'), start_time, end_time, slot_minutes, note
 
-### User Action Required
+`doctor_id` references `auth.users.id` of the staff account (matches existing `appointments.doctor_id` pattern).
 
-You will need to update your EmailJS template on the EmailJS dashboard to render raw HTML from a variable. I'll provide the exact variable name to use.
+**RLS policies**
 
+- SELECT: any authenticated staff (admin/doctor/staff) can read
+- INSERT/UPDATE/DELETE: admin OR `auth.uid() = doctor_id`
+
+**Frontend**
+
+- New tab in `src/pages/AdminDashboard.tsx`
+- New component `src/components/admin/DoctorAvailability.tsx` containing:
+  - Doctor selector (admin only; doctors auto-locked to themselves)
+  - Weekly schedule editor (7 rows with switch + time inputs)
+  - Monthly `Calendar` (shadcn) with day modifiers for leave / custom / default
+  - Date override dialog
+- Helper `src/utils/availability.ts` — given a doctor + date, compute the effective slot list (used now for the admin preview, reusable later for booking)
+
+**No changes** to: BookAppointment page, EmailJS flows, existing tables, or any public route.
