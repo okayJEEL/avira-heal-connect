@@ -221,6 +221,55 @@ const BookAppointment = () => {
     loadAvailability();
   }, [date, selectedDoctor]);
 
+  // Load all leaves + weekly closed days for the selected doctor (to mark calendar)
+  useEffect(() => {
+    if (!selectedDoctor) {
+      setLeaveDates([]);
+      setCustomDates([]);
+      setClosedWeekdays([0]);
+      return;
+    }
+    const loadAll = async () => {
+      const [{ data: overrides }, { data: weeklyAll }] = await Promise.all([
+        supabase
+          .from("doctor_date_overrides")
+          .select("date, type")
+          .eq("doctor_id", selectedDoctor.id),
+        supabase
+          .from("doctor_weekly_availability")
+          .select("weekday, is_available")
+          .eq("doctor_id", selectedDoctor.id),
+      ]);
+      setLeaveDates(
+        (overrides || [])
+          .filter((o: any) => o.type === "leave")
+          .map((o: any) => new Date(o.date + "T00:00:00"))
+      );
+      setCustomDates(
+        (overrides || [])
+          .filter((o: any) => o.type === "custom")
+          .map((o: any) => new Date(o.date + "T00:00:00"))
+      );
+      // Closed weekdays: any with is_available=false. If no rows stored, default Sunday closed only.
+      if (weeklyAll && weeklyAll.length > 0) {
+        setClosedWeekdays(
+          weeklyAll.filter((w: any) => !w.is_available).map((w: any) => w.weekday)
+        );
+      } else {
+        setClosedWeekdays([0]);
+      }
+    };
+    loadAll();
+  }, [selectedDoctor]);
+
+  const isDateDisabled = (d: Date) => {
+    if (isBefore(startOfDay(d), startOfDay(new Date()))) return true;
+    if (closedWeekdays.includes(d.getDay())) return true;
+    const key = format(d, "yyyy-MM-dd");
+    if (leaveDates.some((ld) => format(ld, "yyyy-MM-dd") === key)) return true;
+    return false;
+  };
+
   const availableSlots = useMemo(() => {
     if (!date || !dayAvailability.available) return [];
     const now = new Date();
