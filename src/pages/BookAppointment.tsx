@@ -98,6 +98,14 @@ const BookAppointment = () => {
   const [dateBlocked, setDateBlocked] = useState(false);
   const [blockedReason, setBlockedReason] = useState<string>("");
 
+  const selectedDoctor = doctors.find((d) => d.id === form.doctorId);
+
+  const fee = useMemo(() => {
+    if (!selectedDoctor) return 0;
+    return form.isExisting === "yes" ? selectedDoctor.feeExisting : selectedDoctor.feeNew;
+  }, [selectedDoctor, form.isExisting]);
+
+
   // Fetch booked slots when date or doctor changes
   useEffect(() => {
     if (!date || !selectedDoctor) return;
