@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { doctors } from "@/components/DoctorsSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,11 +38,6 @@ interface OverrideRow {
   note: string | null;
 }
 
-interface DoctorOption {
-  id: string;
-  name: string;
-}
-
 interface Props {
   currentUserId: string;
   isAdmin: boolean;
@@ -50,16 +46,15 @@ interface Props {
 const defaultWeekly = (): WeeklyRow[] =>
   WEEKDAYS.map((_, i) => ({
     weekday: i,
-    is_available: i !== 0, // closed Sunday by default
+    is_available: i !== 0,
     start_time: "10:00",
     end_time: "13:00",
     slot_minutes: 15,
   }));
 
-const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
+const DoctorAvailability = ({ isAdmin }: Props) => {
   const { toast } = useToast();
-  const [doctors, setDoctors] = useState<DoctorOption[]>([]);
-  const [selectedDoctor, setSelectedDoctor] = useState<string>("");
+  const [selectedDoctor, setSelectedDoctor] = useState<string>(doctors[0]?.id || "");
   const [weekly, setWeekly] = useState<WeeklyRow[]>(defaultWeekly());
   const [overrides, setOverrides] = useState<OverrideRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -71,38 +66,6 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   const [dialogSlot, setDialogSlot] = useState(15);
   const [dialogNote, setDialogNote] = useState("");
 
-  // Load doctor list
-  useEffect(() => {
-    const loadDoctors = async () => {
-      if (!isAdmin) {
-        setSelectedDoctor(currentUserId);
-        setDoctors([{ id: currentUserId, name: "Me" }]);
-        return;
-      }
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("user_id")
-        .eq("role", "doctor");
-      const ids = (roles || []).map((r) => r.user_id);
-      if (ids.length === 0) {
-        setDoctors([]);
-        return;
-      }
-      const { data: profs } = await supabase
-        .from("profiles")
-        .select("id, full_name, email")
-        .in("id", ids);
-      const list: DoctorOption[] = (profs || []).map((p) => ({
-        id: p.id,
-        name: p.full_name || p.email || p.id.slice(0, 8),
-      }));
-      setDoctors(list);
-      if (list.length > 0) setSelectedDoctor(list[0].id);
-    };
-    loadDoctors();
-  }, [isAdmin, currentUserId]);
-
-  // Load weekly + overrides for selected doctor
   useEffect(() => {
     if (!selectedDoctor) return;
     const load = async () => {
@@ -146,6 +109,8 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   const saveWeekly = async () => {
     if (!selectedDoctor) return;
     setSaving(true);
+    // Delete + re-insert to keep things simple (no unique index on text+smallint guaranteed)
+    await supabase.from("doctor_weekly_availability").delete().eq("doctor_id", selectedDoctor);
     const rows = weekly.map((r) => ({
       doctor_id: selectedDoctor,
       weekday: r.weekday,
@@ -154,9 +119,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
       end_time: r.end_time,
       slot_minutes: r.slot_minutes,
     }));
-    const { error } = await supabase
-      .from("doctor_weekly_availability")
-      .upsert(rows, { onConflict: "doctor_id,weekday" });
+    const { error } = await supabase.from("doctor_weekly_availability").insert(rows);
     setSaving(false);
     if (error) {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
@@ -199,30 +162,11 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
     }
   };
 
-  const saveOverride = async () => {
-    if (!dialogDate || !selectedDoctor) return;
-    const key = format(dialogDate, "yyyy-MM-dd");
-    const payload: any = {
-      doctor_id: selectedDoctor,
-      date: key,
-      type: dialogType,
-      note: dialogNote || null,
-      start_time: dialogType === "custom" ? dialogStart : null,
-      end_time: dialogType === "custom" ? dialogEnd : null,
-      slot_minutes: dialogType === "custom" ? dialogSlot : null,
-    };
-    setSaving(true);
-    const { error } = await supabase
+  const reloadOverrides = async () => {
+    const { data } = await supabase
       .from("doctor_date_overrides")
-      .upsert(payload, { onConflict: "doctor_id,date" });
-    setSaving(false);
-    if (error) {
-      toast({ title: "Save failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    toast({ title: "Date override saved" });
-    // reload overrides
-    const { data } = await supabase.from("doctor_date_overrides").select("*").eq("doctor_id", selectedDoctor);
+      .select("*")
+      .eq("doctor_id", selectedDoctor);
     setOverrides(
       (data || []).map((r: any) => ({
         id: r.id,
@@ -235,6 +179,35 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
         note: r.note,
       }))
     );
+  };
+
+  const saveOverride = async () => {
+    if (!dialogDate || !selectedDoctor) return;
+    const key = format(dialogDate, "yyyy-MM-dd");
+    setSaving(true);
+    // Delete any existing then insert (avoids needing a unique constraint on text column)
+    await supabase
+      .from("doctor_date_overrides")
+      .delete()
+      .eq("doctor_id", selectedDoctor)
+      .eq("date", key);
+    const payload: any = {
+      doctor_id: selectedDoctor,
+      date: key,
+      type: dialogType,
+      note: dialogNote || null,
+      start_time: dialogType === "custom" ? dialogStart : null,
+      end_time: dialogType === "custom" ? dialogEnd : null,
+      slot_minutes: dialogType === "custom" ? dialogSlot : null,
+    };
+    const { error } = await supabase.from("doctor_date_overrides").insert(payload);
+    setSaving(false);
+    if (error) {
+      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Date override saved" });
+    await reloadOverrides();
     setDialogDate(null);
   };
 
@@ -259,43 +232,47 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
 
   const existingOverride = dialogDate ? overrideMap.get(format(dialogDate, "yyyy-MM-dd")) : null;
 
+  if (!isAdmin) {
+    return (
+      <Card>
+        <CardContent className="p-8 text-center text-muted-foreground">
+          Only admins can manage doctor availability.
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-3">
           <div>
             <CardTitle className="flex items-center gap-2">
               <CalendarDays className="w-5 h-5 text-primary" />
               Doctor Availability
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Manage weekly schedule and date-specific overrides.
+              Set weekly hours and block specific dates. Affects what slots patients can book.
             </p>
           </div>
-          {isAdmin && doctors.length > 0 && (
-            <div className="w-64">
-              <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select doctor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {doctors.map((d) => (
-                    <SelectItem key={d.id} value={d.id}>
-                      {d.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          <div className="w-64">
+            <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select doctor" />
+              </SelectTrigger>
+              <SelectContent>
+                {doctors.map((d) => (
+                  <SelectItem key={d.id} value={d.id}>
+                    {d.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
       </Card>
 
-      {!selectedDoctor ? (
-        <Card><CardContent className="p-8 text-center text-muted-foreground">
-          {isAdmin ? "No doctor accounts found. Create staff accounts with the 'doctor' role first." : "Loading..."}
-        </CardContent></Card>
-      ) : loading ? (
+      {loading ? (
         <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin" /></div>
       ) : (
         <Tabs defaultValue="weekly">
