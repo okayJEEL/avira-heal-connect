@@ -28,21 +28,31 @@ const EMAILJS_PUBLIC_KEY = "zN2bb9xlC65XS2wwg";
 const EMAILJS_SERVICE_ID = "service_rdjqrbt";
 const EMAILJS_TEMPLATE_ID = "template_nh07zjn";
 
-function generateTimeSlots(): string[] {
+function minutesToSlotLabel(total: number): string {
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const ampm = h >= 12 ? "PM" : "AM";
+  return `${hour12}:${m.toString().padStart(2, "0")} ${ampm}`;
+}
+
+function timeStrToMinutes(t: string): number {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function generateSlotsFromRange(start: string, end: string, slotMin: number): string[] {
+  const startM = timeStrToMinutes(start);
+  const endM = timeStrToMinutes(end);
   const slots: string[] = [];
-  for (let h = 10; h < 13; h++) {
-    for (let m = 0; m < 60; m += 15) {
-      const hour12 = h > 12 ? h - 12 : h;
-      const ampm = h >= 12 ? "PM" : "AM";
-      slots.push(`${hour12}:${m.toString().padStart(2, "0")} ${ampm}`);
-    }
+  const step = Math.max(5, slotMin || 15);
+  for (let t = startM; t <= endM; t += step) {
+    slots.push(minutesToSlotLabel(t));
   }
-  // Add 1:00 PM as last slot
-  slots.push("1:00 PM");
   return slots;
 }
 
-const allSlots = generateTimeSlots();
+const DEFAULT_SLOTS = generateSlotsFromRange("10:00", "13:00", 15);
 
 function slotToMinutes(slot: string): number {
   const [time, ampm] = slot.split(" ");
@@ -80,6 +90,13 @@ const BookAppointment = () => {
   const [success, setSuccess] = useState(false);
   const [appointmentId, setAppointmentId] = useState("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [dayAvailability, setDayAvailability] = useState<{
+    available: boolean;
+    slots: string[];
+    reason?: string;
+  }>({ available: true, slots: DEFAULT_SLOTS });
+  const [dateBlocked, setDateBlocked] = useState(false);
+  const [blockedReason, setBlockedReason] = useState<string>("");
 
   const selectedDoctor = doctors.find((d) => d.id === form.doctorId);
 
@@ -88,10 +105,11 @@ const BookAppointment = () => {
     return form.isExisting === "yes" ? selectedDoctor.feeExisting : selectedDoctor.feeNew;
   }, [selectedDoctor, form.isExisting]);
 
+
   // Fetch booked slots when date or doctor changes
   useEffect(() => {
     if (!date || !selectedDoctor) return;
-    
+
     const fetchBookedSlots = async () => {
       const startOfSelectedDay = new Date(date);
       startOfSelectedDay.setHours(0, 0, 0, 0);
@@ -105,7 +123,7 @@ const BookAppointment = () => {
         .lte("time_slot", endOfSelectedDay.toISOString())
         .eq("department", selectedDoctor.specialty)
         .in("status", ["pending", "confirmed", "completed"]);
-      
+
       if (!error && data) {
         const slots = data.map(apt => format(new Date(apt.time_slot), "h:mm a"));
         setBookedSlots(slots);
@@ -126,23 +144,104 @@ const BookAppointment = () => {
     return () => { supabase.removeChannel(channel); };
   }, [date, selectedDoctor]);
 
+  // Fetch doctor availability (weekly + date override) for the selected date
+  useEffect(() => {
+    if (!date || !selectedDoctor) {
+      setDayAvailability({ available: true, slots: DEFAULT_SLOTS });
+      setDateBlocked(false);
+      setBlockedReason("");
+      return;
+    }
+
+    const loadAvailability = async () => {
+      const dateKey = format(date, "yyyy-MM-dd");
+      const weekday = date.getDay();
+
+      const [{ data: overrideRows }, { data: weeklyRows }] = await Promise.all([
+        supabase
+          .from("doctor_date_overrides")
+          .select("*")
+          .eq("doctor_id", selectedDoctor.id)
+          .eq("date", dateKey)
+          .maybeSingle(),
+        supabase
+          .from("doctor_weekly_availability")
+          .select("*")
+          .eq("doctor_id", selectedDoctor.id)
+          .eq("weekday", weekday)
+          .maybeSingle(),
+      ]);
+
+      const override: any = overrideRows;
+      const weekly: any = weeklyRows;
+
+      if (override) {
+        if (override.type === "leave") {
+          setDayAvailability({ available: false, slots: [], reason: override.note || "Doctor on leave" });
+          setDateBlocked(true);
+          setBlockedReason(override.note ? `On leave: ${override.note}` : "Doctor is on leave on this date");
+          return;
+        }
+        if (override.type === "custom" && override.start_time && override.end_time) {
+          setDayAvailability({
+            available: true,
+            slots: generateSlotsFromRange(override.start_time, override.end_time, override.slot_minutes || 15),
+          });
+          setDateBlocked(false);
+          setBlockedReason(override.note ? `Special hours: ${override.note}` : "");
+          return;
+        }
+      }
+
+      if (weekly) {
+        if (!weekly.is_available) {
+          setDayAvailability({ available: false, slots: [], reason: "Doctor unavailable this weekday" });
+          setDateBlocked(true);
+          setBlockedReason("Doctor is not available on this weekday");
+          return;
+        }
+        setDayAvailability({
+          available: true,
+          slots: generateSlotsFromRange(weekly.start_time, weekly.end_time, weekly.slot_minutes || 15),
+        });
+        setDateBlocked(false);
+        setBlockedReason("");
+        return;
+      }
+
+      // No weekly row stored → fall back to default 10–1 PM
+      setDayAvailability({ available: true, slots: DEFAULT_SLOTS });
+      setDateBlocked(false);
+      setBlockedReason("");
+    };
+
+    loadAvailability();
+  }, [date, selectedDoctor]);
+
   const availableSlots = useMemo(() => {
-    if (!date) return [];
+    if (!date || !dayAvailability.available) return [];
     const now = new Date();
-    
-    let filteredSlots = allSlots;
-    
-    // Filter by time if today
+
+    let filteredSlots = dayAvailability.slots;
+
     if (isToday(date)) {
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      filteredSlots = allSlots.filter((slot) => slotToMinutes(slot) > currentMinutes);
+      filteredSlots = filteredSlots.filter((slot) => slotToMinutes(slot) > currentMinutes);
     }
-    
-    // Filter out booked slots
+
     filteredSlots = filteredSlots.filter(slot => !bookedSlots.includes(slot));
-    
+
     return filteredSlots;
-  }, [date, bookedSlots]);
+  }, [date, bookedSlots, dayAvailability]);
+
+  // Clear selected time slot if it's no longer valid for the loaded availability
+  useEffect(() => {
+    if (timeSlot && !dayAvailability.slots.includes(timeSlot)) {
+      setTimeSlot("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dayAvailability]);
+
 
   const updateForm = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -401,38 +500,50 @@ const BookAppointment = () => {
               <Label>Time Slot *</Label>
               {!date ? (
                 <p className="text-sm text-muted-foreground mt-2">Please select a date first</p>
+              ) : dateBlocked ? (
+                <div className="mt-2 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-sm p-3">
+                  {blockedReason || "The doctor is not available on this date. Please pick another date."}
+                </div>
               ) : availableSlots.length === 0 ? (
                 <p className="text-sm text-destructive mt-2">No slots available for this date</p>
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
-                  {allSlots.map((slot) => {
-                    const isBooked = bookedSlots.includes(slot);
-                    const isUnavailable = !availableSlots.includes(slot);
-                    const isSelected = timeSlot === slot;
-                    return (
-                      <button
-                        key={slot}
-                        type="button"
-                        disabled={isUnavailable}
-                        onClick={() => setTimeSlot(slot)}
-                        className={cn(
-                          "px-3 py-2.5 rounded-lg text-sm font-medium border transition-all duration-200",
-                          isSelected
-                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                            : isBooked
-                              ? "bg-destructive/10 text-destructive/50 border-destructive/20 cursor-not-allowed line-through"
-                              : isUnavailable
-                                ? "bg-muted text-muted-foreground/40 border-border cursor-not-allowed"
-                                : "bg-card text-foreground border-border hover:border-primary hover:bg-primary/5 cursor-pointer"
-                        )}
-                      >
-                        {slot}
-                      </button>
-                    );
-                  })}
-                </div>
+                <>
+                  {blockedReason && (
+                    <div className="mt-2 mb-2 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 text-xs p-2">
+                      {blockedReason}
+                    </div>
+                  )}
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
+                    {dayAvailability.slots.map((slot) => {
+                      const isBooked = bookedSlots.includes(slot);
+                      const isUnavailable = !availableSlots.includes(slot);
+                      const isSelected = timeSlot === slot;
+                      return (
+                        <button
+                          key={slot}
+                          type="button"
+                          disabled={isUnavailable}
+                          onClick={() => setTimeSlot(slot)}
+                          className={cn(
+                            "px-3 py-2.5 rounded-lg text-sm font-medium border transition-all duration-200",
+                            isSelected
+                              ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
+                              : isBooked
+                                ? "bg-destructive/10 text-destructive/50 border-destructive/20 cursor-not-allowed line-through"
+                                : isUnavailable
+                                  ? "bg-muted text-muted-foreground/40 border-border cursor-not-allowed"
+                                  : "bg-card text-foreground border-border hover:border-primary hover:bg-primary/5 cursor-pointer"
+                          )}
+                        >
+                          {slot}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </div>
+
 
             {/* Patient Type */}
             <div>
