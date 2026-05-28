@@ -52,9 +52,15 @@ const defaultWeekly = (): WeeklyRow[] =>
     slot_minutes: 15,
   }));
 
-const DoctorAvailability = ({ isAdmin }: Props) => {
+const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   const { toast } = useToast();
-  const [selectedDoctor, setSelectedDoctor] = useState<string>(doctors[0]?.id || "");
+  const [selectedDoctor, setSelectedDoctor] = useState<string>("");
+  const [mySlug, setMySlug] = useState<string | null>(null);
+  const [mappingLoaded, setMappingLoaded] = useState(false);
+
+  // Admin mapping UI state
+  const [doctorUsers, setDoctorUsers] = useState<{ id: string; name: string; slug: string | null }[]>([]);
+
   const [weekly, setWeekly] = useState<WeeklyRow[]>(defaultWeekly());
   const [overrides, setOverrides] = useState<OverrideRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -65,6 +71,86 @@ const DoctorAvailability = ({ isAdmin }: Props) => {
   const [dialogEnd, setDialogEnd] = useState("13:00");
   const [dialogSlot, setDialogSlot] = useState(15);
   const [dialogNote, setDialogNote] = useState("");
+
+  // Determine current user's doctor mapping (for non-admin doctors)
+  useEffect(() => {
+    const loadMapping = async () => {
+      const { data } = await supabase
+        .from("doctor_profiles")
+        .select("doctor_slug")
+        .eq("user_id", currentUserId)
+        .maybeSingle();
+      const slug = (data as any)?.doctor_slug || null;
+      setMySlug(slug);
+      setMappingLoaded(true);
+      if (isAdmin) {
+        setSelectedDoctor(doctors[0]?.id || "");
+      } else if (slug) {
+        setSelectedDoctor(slug);
+      }
+    };
+    loadMapping();
+  }, [currentUserId, isAdmin]);
+
+  // Admins: load doctor staff accounts + current mapping for the mapping UI
+  useEffect(() => {
+    if (!isAdmin) return;
+    const load = async () => {
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "doctor");
+      const ids = (roles || []).map((r: any) => r.user_id);
+      if (ids.length === 0) {
+        setDoctorUsers([]);
+        return;
+      }
+      const [{ data: profs }, { data: maps }] = await Promise.all([
+        supabase.from("profiles").select("id, full_name, email").in("id", ids),
+        supabase.from("doctor_profiles").select("user_id, doctor_slug").in("user_id", ids),
+      ]);
+      const slugByUser = new Map<string, string>();
+      (maps || []).forEach((m: any) => slugByUser.set(m.user_id, m.doctor_slug));
+      setDoctorUsers(
+        (profs || []).map((p: any) => ({
+          id: p.id,
+          name: p.full_name || p.email || p.id.slice(0, 8),
+          slug: slugByUser.get(p.id) || null,
+        }))
+      );
+    };
+    load();
+  }, [isAdmin]);
+
+  const assignSlugToUser = async (userId: string, slug: string | "none") => {
+    if (slug === "none") {
+      const { error } = await supabase.from("doctor_profiles").delete().eq("user_id", userId);
+      if (error) {
+        toast({ title: "Failed", description: error.message, variant: "destructive" });
+        return;
+      }
+    } else {
+      // Remove any previous owner of this slug, then upsert mapping for this user
+      await supabase.from("doctor_profiles").delete().eq("doctor_slug", slug);
+      const { error } = await supabase
+        .from("doctor_profiles")
+        .upsert({ user_id: userId, doctor_slug: slug }, { onConflict: "user_id" });
+      if (error) {
+        toast({ title: "Failed", description: error.message, variant: "destructive" });
+        return;
+      }
+    }
+    setDoctorUsers((prev) =>
+      prev.map((d) => {
+        if (d.id === userId) return { ...d, slug: slug === "none" ? null : slug };
+        // Clear slug from anyone else who had it
+        if (slug !== "none" && d.slug === slug && d.id !== userId) return { ...d, slug: null };
+        return d;
+      })
+    );
+    toast({ title: "Doctor link updated" });
+  };
+
 
   useEffect(() => {
     if (!selectedDoctor) return;
@@ -232,11 +318,13 @@ const DoctorAvailability = ({ isAdmin }: Props) => {
 
   const existingOverride = dialogDate ? overrideMap.get(format(dialogDate, "yyyy-MM-dd")) : null;
 
-  if (!isAdmin) {
+  // Non-admin doctor without a mapping yet
+  if (!isAdmin && mappingLoaded && !mySlug) {
     return (
       <Card>
-        <CardContent className="p-8 text-center text-muted-foreground">
-          Only admins can manage doctor availability.
+        <CardContent className="p-8 text-center text-muted-foreground space-y-2">
+          <p className="font-medium text-foreground">Your account is not linked to a doctor profile yet.</p>
+          <p className="text-sm">Ask an admin to link your account to a doctor (Dr. Vivek or Dr. Preeti) from the Availability tab.</p>
         </CardContent>
       </Card>
     );
@@ -252,25 +340,68 @@ const DoctorAvailability = ({ isAdmin }: Props) => {
               Doctor Availability
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Set weekly hours and block specific dates. Affects what slots patients can book.
+              {isAdmin
+                ? "Set weekly hours and block specific dates. Affects what slots patients can book."
+                : `Editing your schedule (${doctors.find((d) => d.id === mySlug)?.name || mySlug}).`}
             </p>
           </div>
-          <div className="w-64">
-            <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select doctor" />
-              </SelectTrigger>
-              <SelectContent>
-                {doctors.map((d) => (
-                  <SelectItem key={d.id} value={d.id}>
-                    {d.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {isAdmin && (
+            <div className="w-64">
+              <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select doctor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {doctors.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </CardHeader>
       </Card>
+
+      {isAdmin && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Doctor Account Links</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Link each doctor's staff login to a doctor on the website so they can edit their own availability.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {doctorUsers.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No staff accounts with the "doctor" role yet.</p>
+            ) : (
+              doctorUsers.map((u) => (
+                <div key={u.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border">
+                  <div className="min-w-0">
+                    <div className="font-medium truncate">{u.name}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {u.slug ? `Linked to ${doctors.find((d) => d.id === u.slug)?.name || u.slug}` : "Not linked"}
+                    </div>
+                  </div>
+                  <div className="w-56">
+                    <Select value={u.slug || "none"} onValueChange={(v) => assignSlugToUser(u.id, v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Not linked</SelectItem>
+                        {doctors.map((d) => (
+                          <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      )}
+
 
       {loading ? (
         <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin" /></div>
