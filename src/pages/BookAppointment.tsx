@@ -28,21 +28,31 @@ const EMAILJS_PUBLIC_KEY = "zN2bb9xlC65XS2wwg";
 const EMAILJS_SERVICE_ID = "service_rdjqrbt";
 const EMAILJS_TEMPLATE_ID = "template_nh07zjn";
 
-function generateTimeSlots(): string[] {
+function minutesToSlotLabel(total: number): string {
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const ampm = h >= 12 ? "PM" : "AM";
+  return `${hour12}:${m.toString().padStart(2, "0")} ${ampm}`;
+}
+
+function timeStrToMinutes(t: string): number {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function generateSlotsFromRange(start: string, end: string, slotMin: number): string[] {
+  const startM = timeStrToMinutes(start);
+  const endM = timeStrToMinutes(end);
   const slots: string[] = [];
-  for (let h = 10; h < 13; h++) {
-    for (let m = 0; m < 60; m += 15) {
-      const hour12 = h > 12 ? h - 12 : h;
-      const ampm = h >= 12 ? "PM" : "AM";
-      slots.push(`${hour12}:${m.toString().padStart(2, "0")} ${ampm}`);
-    }
+  const step = Math.max(5, slotMin || 15);
+  for (let t = startM; t <= endM; t += step) {
+    slots.push(minutesToSlotLabel(t));
   }
-  // Add 1:00 PM as last slot
-  slots.push("1:00 PM");
   return slots;
 }
 
-const allSlots = generateTimeSlots();
+const DEFAULT_SLOTS = generateSlotsFromRange("10:00", "13:00", 15);
 
 function slotToMinutes(slot: string): number {
   const [time, ampm] = slot.split(" ");
