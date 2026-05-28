@@ -97,6 +97,9 @@ const BookAppointment = () => {
   }>({ available: true, slots: DEFAULT_SLOTS });
   const [dateBlocked, setDateBlocked] = useState(false);
   const [blockedReason, setBlockedReason] = useState<string>("");
+  const [leaveDates, setLeaveDates] = useState<Date[]>([]);
+  const [customDates, setCustomDates] = useState<Date[]>([]);
+  const [closedWeekdays, setClosedWeekdays] = useState<number[]>([0]);
 
   const selectedDoctor = doctors.find((d) => d.id === form.doctorId);
 
