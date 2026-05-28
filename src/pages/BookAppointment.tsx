@@ -540,7 +540,12 @@ const BookAppointment = () => {
                     mode="single"
                     selected={date}
                     onSelect={(d) => { setDate(d); setTimeSlot(""); }}
-                    disabled={(d) => isBefore(startOfDay(d), startOfDay(new Date())) || d.getDay() === 0}
+                    disabled={isDateDisabled}
+                    modifiers={{ leave: leaveDates, custom: customDates }}
+                    modifiersClassNames={{
+                      leave: "bg-destructive/20 text-destructive line-through font-semibold",
+                      custom: "bg-amber-200 text-amber-900 font-semibold",
+                    }}
                     className="p-3 pointer-events-auto"
                   />
                 </PopoverContent>
