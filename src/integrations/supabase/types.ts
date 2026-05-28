@@ -224,6 +224,24 @@ export type Database = {
         }
         Relationships: []
       }
+      doctor_profiles: {
+        Row: {
+          created_at: string
+          doctor_slug: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_slug: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doctor_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       doctor_weekly_availability: {
         Row: {
           created_at: string
@@ -413,6 +431,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_doctor_slug: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
