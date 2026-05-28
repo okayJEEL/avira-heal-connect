@@ -90,18 +90,18 @@ const BookAppointment = () => {
   const [success, setSuccess] = useState(false);
   const [appointmentId, setAppointmentId] = useState("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
-
-  const selectedDoctor = doctors.find((d) => d.id === form.doctorId);
-
-  const fee = useMemo(() => {
-    if (!selectedDoctor) return 0;
-    return form.isExisting === "yes" ? selectedDoctor.feeExisting : selectedDoctor.feeNew;
-  }, [selectedDoctor, form.isExisting]);
+  const [dayAvailability, setDayAvailability] = useState<{
+    available: boolean;
+    slots: string[];
+    reason?: string;
+  }>({ available: true, slots: DEFAULT_SLOTS });
+  const [dateBlocked, setDateBlocked] = useState(false);
+  const [blockedReason, setBlockedReason] = useState<string>("");
 
   // Fetch booked slots when date or doctor changes
   useEffect(() => {
     if (!date || !selectedDoctor) return;
-    
+
     const fetchBookedSlots = async () => {
       const startOfSelectedDay = new Date(date);
       startOfSelectedDay.setHours(0, 0, 0, 0);
@@ -115,7 +115,7 @@ const BookAppointment = () => {
         .lte("time_slot", endOfSelectedDay.toISOString())
         .eq("department", selectedDoctor.specialty)
         .in("status", ["pending", "confirmed", "completed"]);
-      
+
       if (!error && data) {
         const slots = data.map(apt => format(new Date(apt.time_slot), "h:mm a"));
         setBookedSlots(slots);
@@ -136,23 +136,104 @@ const BookAppointment = () => {
     return () => { supabase.removeChannel(channel); };
   }, [date, selectedDoctor]);
 
+  // Fetch doctor availability (weekly + date override) for the selected date
+  useEffect(() => {
+    if (!date || !selectedDoctor) {
+      setDayAvailability({ available: true, slots: DEFAULT_SLOTS });
+      setDateBlocked(false);
+      setBlockedReason("");
+      return;
+    }
+
+    const loadAvailability = async () => {
+      const dateKey = format(date, "yyyy-MM-dd");
+      const weekday = date.getDay();
+
+      const [{ data: overrideRows }, { data: weeklyRows }] = await Promise.all([
+        supabase
+          .from("doctor_date_overrides")
+          .select("*")
+          .eq("doctor_id", selectedDoctor.id)
+          .eq("date", dateKey)
+          .maybeSingle(),
+        supabase
+          .from("doctor_weekly_availability")
+          .select("*")
+          .eq("doctor_id", selectedDoctor.id)
+          .eq("weekday", weekday)
+          .maybeSingle(),
+      ]);
+
+      const override: any = overrideRows;
+      const weekly: any = weeklyRows;
+
+      if (override) {
+        if (override.type === "leave") {
+          setDayAvailability({ available: false, slots: [], reason: override.note || "Doctor on leave" });
+          setDateBlocked(true);
+          setBlockedReason(override.note ? `On leave: ${override.note}` : "Doctor is on leave on this date");
+          return;
+        }
+        if (override.type === "custom" && override.start_time && override.end_time) {
+          setDayAvailability({
+            available: true,
+            slots: generateSlotsFromRange(override.start_time, override.end_time, override.slot_minutes || 15),
+          });
+          setDateBlocked(false);
+          setBlockedReason(override.note ? `Special hours: ${override.note}` : "");
+          return;
+        }
+      }
+
+      if (weekly) {
+        if (!weekly.is_available) {
+          setDayAvailability({ available: false, slots: [], reason: "Doctor unavailable this weekday" });
+          setDateBlocked(true);
+          setBlockedReason("Doctor is not available on this weekday");
+          return;
+        }
+        setDayAvailability({
+          available: true,
+          slots: generateSlotsFromRange(weekly.start_time, weekly.end_time, weekly.slot_minutes || 15),
+        });
+        setDateBlocked(false);
+        setBlockedReason("");
+        return;
+      }
+
+      // No weekly row stored → fall back to default 10–1 PM
+      setDayAvailability({ available: true, slots: DEFAULT_SLOTS });
+      setDateBlocked(false);
+      setBlockedReason("");
+    };
+
+    loadAvailability();
+  }, [date, selectedDoctor]);
+
   const availableSlots = useMemo(() => {
-    if (!date) return [];
+    if (!date || !dayAvailability.available) return [];
     const now = new Date();
-    
-    let filteredSlots = allSlots;
-    
-    // Filter by time if today
+
+    let filteredSlots = dayAvailability.slots;
+
     if (isToday(date)) {
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      filteredSlots = allSlots.filter((slot) => slotToMinutes(slot) > currentMinutes);
+      filteredSlots = filteredSlots.filter((slot) => slotToMinutes(slot) > currentMinutes);
     }
-    
-    // Filter out booked slots
+
     filteredSlots = filteredSlots.filter(slot => !bookedSlots.includes(slot));
-    
+
     return filteredSlots;
-  }, [date, bookedSlots]);
+  }, [date, bookedSlots, dayAvailability]);
+
+  // Clear selected time slot if it's no longer valid for the loaded availability
+  useEffect(() => {
+    if (timeSlot && !dayAvailability.slots.includes(timeSlot)) {
+      setTimeSlot("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dayAvailability]);
+
 
   const updateForm = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
