@@ -500,38 +500,50 @@ const BookAppointment = () => {
               <Label>Time Slot *</Label>
               {!date ? (
                 <p className="text-sm text-muted-foreground mt-2">Please select a date first</p>
+              ) : dateBlocked ? (
+                <div className="mt-2 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-sm p-3">
+                  {blockedReason || "The doctor is not available on this date. Please pick another date."}
+                </div>
               ) : availableSlots.length === 0 ? (
                 <p className="text-sm text-destructive mt-2">No slots available for this date</p>
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
-                  {allSlots.map((slot) => {
-                    const isBooked = bookedSlots.includes(slot);
-                    const isUnavailable = !availableSlots.includes(slot);
-                    const isSelected = timeSlot === slot;
-                    return (
-                      <button
-                        key={slot}
-                        type="button"
-                        disabled={isUnavailable}
-                        onClick={() => setTimeSlot(slot)}
-                        className={cn(
-                          "px-3 py-2.5 rounded-lg text-sm font-medium border transition-all duration-200",
-                          isSelected
-                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                            : isBooked
-                              ? "bg-destructive/10 text-destructive/50 border-destructive/20 cursor-not-allowed line-through"
-                              : isUnavailable
-                                ? "bg-muted text-muted-foreground/40 border-border cursor-not-allowed"
-                                : "bg-card text-foreground border-border hover:border-primary hover:bg-primary/5 cursor-pointer"
-                        )}
-                      >
-                        {slot}
-                      </button>
-                    );
-                  })}
-                </div>
+                <>
+                  {blockedReason && (
+                    <div className="mt-2 mb-2 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 text-xs p-2">
+                      {blockedReason}
+                    </div>
+                  )}
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
+                    {dayAvailability.slots.map((slot) => {
+                      const isBooked = bookedSlots.includes(slot);
+                      const isUnavailable = !availableSlots.includes(slot);
+                      const isSelected = timeSlot === slot;
+                      return (
+                        <button
+                          key={slot}
+                          type="button"
+                          disabled={isUnavailable}
+                          onClick={() => setTimeSlot(slot)}
+                          className={cn(
+                            "px-3 py-2.5 rounded-lg text-sm font-medium border transition-all duration-200",
+                            isSelected
+                              ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
+                              : isBooked
+                                ? "bg-destructive/10 text-destructive/50 border-destructive/20 cursor-not-allowed line-through"
+                                : isUnavailable
+                                  ? "bg-muted text-muted-foreground/40 border-border cursor-not-allowed"
+                                  : "bg-card text-foreground border-border hover:border-primary hover:bg-primary/5 cursor-pointer"
+                          )}
+                        >
+                          {slot}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </div>
+
 
             {/* Patient Type */}
             <div>
