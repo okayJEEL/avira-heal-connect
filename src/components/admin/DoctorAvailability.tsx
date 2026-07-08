@@ -52,6 +52,18 @@ const defaultWeekly = (): WeeklyRow[] =>
     slot_minutes: 15,
   }));
 
+// Compute number of bookable slots for a weekday config
+const slotCount = (row: WeeklyRow): number => {
+  if (!row.is_available) return 0;
+  const [sh, sm] = row.start_time.split(":").map(Number);
+  const [eh, em] = row.end_time.split(":").map(Number);
+  const mins = eh * 60 + em - (sh * 60 + sm);
+  if (mins <= 0 || !row.slot_minutes) return 0;
+  return Math.floor(mins / row.slot_minutes);
+};
+
+const todayStr = () => format(new Date(), "yyyy-MM-dd");
+
 const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   const { toast } = useToast();
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
