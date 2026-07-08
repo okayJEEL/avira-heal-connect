@@ -476,6 +476,19 @@ const AdminDashboard = () => {
                       <SelectItem value="completed">Completed</SelectItem>
                     </SelectContent>
                   </Select>
+                  {!isDoctor && (
+                    <Select value={doctorFilter} onValueChange={setDoctorFilter}>
+                      <SelectTrigger className="w-[220px]">
+                        <Users className="w-4 h-4 mr-2" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Doctors</SelectItem>
+                        <SelectItem value="vivek">Dr. Vivek Siddhpura</SelectItem>
+                        <SelectItem value="preeti">Dr. Preeti Siddhpura</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
