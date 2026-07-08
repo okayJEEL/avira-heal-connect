@@ -432,6 +432,12 @@ export type Database = {
     }
     Functions: {
       current_doctor_slug: { Args: never; Returns: string }
+      get_booked_slots: {
+        Args: { _day: string; _department: string }
+        Returns: {
+          time_slot: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
