@@ -251,10 +251,45 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
     [overrides]
   );
 
-  const openDateDialog = (date: Date) => {
+  // Copy one weekday's hours to every other working day
+  const copyToAllWorkingDays = (srcIdx: number) => {
+    const src = weekly[srcIdx];
+    setWeekly((prev) =>
+      prev.map((r, i) =>
+        i === srcIdx
+          ? r
+          : {
+              ...r,
+              start_time: r.is_available ? src.start_time : r.start_time,
+              end_time: r.is_available ? src.end_time : r.end_time,
+              slot_minutes: r.is_available ? src.slot_minutes : r.slot_minutes,
+            }
+      )
+    );
+    toast({ title: `Copied ${WEEKDAYS[src.weekday]}'s hours to other working days` });
+  };
+
+  // Count active appointments on a given date for the selected doctor's department
+  const countBookingsOnDate = async (dateStr: string): Promise<number> => {
+    const fromIso = new Date(`${dateStr}T00:00:00+05:30`).toISOString();
+    const toIso = new Date(`${dateStr}T23:59:59+05:30`).toISOString();
+    const dept = doctors.find((d) => d.id === selectedDoctor)?.department;
+    let q = supabase
+      .from("appointments")
+      .select("id", { count: "exact", head: true })
+      .gte("time_slot", fromIso)
+      .lte("time_slot", toIso)
+      .in("status", ["pending", "confirmed"]);
+    if (dept) q = q.eq("department", dept);
+    const { count } = await q;
+    return count || 0;
+  };
+
+  const openDateDialog = async (date: Date) => {
     const key = format(date, "yyyy-MM-dd");
     const existing = overrideMap.get(key);
     setDialogDate(date);
+    setDialogBookings(0);
     if (existing) {
       setDialogType(existing.type);
       setDialogStart(existing.start_time || "10:00");
@@ -268,6 +303,9 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
       setDialogSlot(15);
       setDialogNote("");
     }
+    // Load bookings count in background
+    const n = await countBookingsOnDate(key);
+    setDialogBookings(n);
   };
 
   const reloadOverrides = async () => {
