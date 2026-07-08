@@ -133,12 +133,17 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
       ]);
       const slugByUser = new Map<string, string>();
       (maps || []).forEach((m: any) => slugByUser.set(m.user_id, m.doctor_slug));
+      const profById = new Map<string, any>();
+      (profs || []).forEach((p: any) => profById.set(p.id, p));
       setDoctorUsers(
-        (profs || []).map((p: any) => ({
-          id: p.id,
-          name: p.full_name || p.email || p.id.slice(0, 8),
-          slug: slugByUser.get(p.id) || null,
-        }))
+        ids.map((uid: string) => {
+          const p = profById.get(uid);
+          return {
+            id: uid,
+            name: p?.full_name || p?.email || `Doctor (${uid.slice(0, 8)})`,
+            slug: slugByUser.get(uid) || null,
+          };
+        })
       );
     };
     load();
