@@ -36,7 +36,7 @@ const About = () => {
 
               <div className="relative aspect-[16/9] md:aspect-[21/9]">
                 <img
-                  src={teamPhotoAsset.url}
+                  src="/avira-team.jpg"
                   alt="The Avira Hospital team standing together at the hospital entrance"
                   className="w-full h-full object-cover object-center"
                   loading="lazy"
