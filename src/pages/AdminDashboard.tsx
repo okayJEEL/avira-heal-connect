@@ -450,8 +450,11 @@ const AdminDashboard = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>{isDoctor ? "My Appointments" : "Appointments Management"}</CardTitle>
-                  <div className="text-sm text-muted-foreground">
-                    {filteredAppointments.length} appointments
+                  <div className="flex items-center gap-3">
+                    {!isDoctor && <ExcelReportButton />}
+                    <div className="text-sm text-muted-foreground">
+                      {filteredAppointments.length} appointments
+                    </div>
                   </div>
                 </div>
                 <div className="flex gap-4 flex-wrap">
