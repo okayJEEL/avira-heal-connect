@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { ImageIcon, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { ImageIcon, ArrowLeft, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
