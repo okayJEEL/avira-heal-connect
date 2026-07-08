@@ -34,7 +34,7 @@ const App = () => (
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/video-call/:roomId" element={<VideoCallRoom />} />
-          <Route path="/staff-login" element={<StaffLogin />} />
+          <Route path="/staff-portal" element={<StaffLogin />} />
           <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
