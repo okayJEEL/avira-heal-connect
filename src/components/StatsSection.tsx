@@ -2,7 +2,7 @@ import { User, Users, CalendarCheck, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
 const items = [
-  { icon: User, value: "15+ Years", label: "Experience", gradient: "from-primary/20 to-primary/5" },
+  { icon: User, value: "10+ Years", label: "Experience", gradient: "from-primary/20 to-primary/5" },
   { icon: Users, value: "10+ Staff", label: "Members", gradient: "from-primary/15 to-accent/30" },
   { icon: CalendarCheck, value: "Easy", label: "Appointments", gradient: "from-accent/30 to-primary/10" },
   { icon: Clock, value: "24/7", label: "Emergency", gradient: "from-primary/10 to-primary/20" },
