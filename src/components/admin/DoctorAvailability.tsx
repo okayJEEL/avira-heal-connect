@@ -643,23 +643,57 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-2">
-                    <h4 className="font-medium text-sm">Upcoming overrides</h4>
-                    {overrides.length === 0 && (
-                      <p className="text-sm text-muted-foreground">No overrides set.</p>
-                    )}
-                    <div className="space-y-2 max-h-96 overflow-auto">
-                      {[...overrides]
-                        .sort((a, b) => a.date.localeCompare(b.date))
-                        .map((o) => (
+                  <div className="flex-1 space-y-4">
+                    {/* Multi-day leave */}
+                    <div className="rounded-lg border p-3 bg-muted/30 space-y-3">
+                      <div className="flex items-center gap-2 font-medium text-sm">
+                        <CalendarRange className="w-4 h-4 text-primary" />
+                        Mark multi-day leave
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-xs">From</Label>
+                          <Input type="date" value={rangeFrom} onChange={(e) => setRangeFrom(e.target.value)} />
+                        </div>
+                        <div>
+                          <Label className="text-xs">To</Label>
+                          <Input type="date" value={rangeTo} onChange={(e) => setRangeTo(e.target.value)} />
+                        </div>
+                      </div>
+                      <Input
+                        placeholder="Optional note (e.g. Diwali holiday)"
+                        value={rangeNote}
+                        onChange={(e) => setRangeNote(e.target.value)}
+                      />
+                      <Button
+                        size="sm"
+                        onClick={saveRangeLeave}
+                        disabled={savingRange || !rangeFrom || !rangeTo}
+                        className="w-full"
+                      >
+                        {savingRange ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                        Save leave range
+                      </Button>
+                    </div>
+
+                    {/* Upcoming overrides */}
+                    <div>
+                      <h4 className="font-medium text-sm mb-2 flex items-center justify-between">
+                        <span>Upcoming ({upcomingOverrides.length})</span>
+                      </h4>
+                      {upcomingOverrides.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No upcoming overrides.</p>
+                      )}
+                      <div className="space-y-2 max-h-72 overflow-auto">
+                        {upcomingOverrides.map((o) => (
                           <div
                             key={o.date}
-                            className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/40 cursor-pointer"
+                            className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/40 cursor-pointer transition-colors"
                             onClick={() => openDateDialog(new Date(o.date + "T00:00:00"))}
                           >
-                            <div>
+                            <div className="min-w-0">
                               <div className="font-medium">{format(new Date(o.date + "T00:00:00"), "EEE, dd MMM yyyy")}</div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-muted-foreground truncate">
                                 {o.type === "leave" ? "On leave" : `${o.start_time} – ${o.end_time} (${o.slot_minutes} min)`}
                                 {o.note ? ` · ${o.note}` : ""}
                               </div>
@@ -667,7 +701,39 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                             <Badge variant={o.type === "leave" ? "destructive" : "secondary"}>{o.type}</Badge>
                           </div>
                         ))}
+                      </div>
                     </div>
+
+                    {/* Past overrides (collapsible) */}
+                    {pastOverrides.length > 0 && (
+                      <div>
+                        <button
+                          onClick={() => setShowPast((s) => !s)}
+                          className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {showPast ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                          Past overrides ({pastOverrides.length})
+                        </button>
+                        {showPast && (
+                          <div className="space-y-2 max-h-64 overflow-auto mt-2">
+                            {pastOverrides.map((o) => (
+                              <div
+                                key={o.date}
+                                className="flex items-center justify-between p-2.5 rounded-lg border bg-muted/20 opacity-70"
+                              >
+                                <div className="min-w-0">
+                                  <div className="text-sm">{format(new Date(o.date + "T00:00:00"), "dd MMM yyyy")}</div>
+                                  <div className="text-[11px] text-muted-foreground truncate">
+                                    {o.type === "leave" ? "Was on leave" : `${o.start_time} – ${o.end_time}`}
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className="text-[10px]">{o.type}</Badge>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
