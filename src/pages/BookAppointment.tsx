@@ -129,16 +129,9 @@ const BookAppointment = () => {
 
     fetchBookedSlots();
 
-    const channel = supabase
-      .channel(`slots-${selectedDoctor.id}-${format(date, "yyyy-MM-dd")}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "appointments" },
-        () => { fetchBookedSlots(); }
-      )
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
+    // Poll every 20s to refresh availability (realtime disabled for privacy)
+    const interval = setInterval(fetchBookedSlots, 20000);
+    return () => { clearInterval(interval); };
   }, [date, selectedDoctor]);
 
   // Fetch doctor availability (weekly + date override) for the selected date
