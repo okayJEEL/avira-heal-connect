@@ -18,7 +18,7 @@ interface EmailData {
 }
 
 export function generateAppointmentEmailHTML(data: EmailData): string {
-  const portalUrl = "https://avirahospital.in/staff-login";
+  const portalUrl = "https://avirahospital.in/staff-portal";
   const logoUrl = "https://i.ibb.co/ZRjCdVqB/final-logo.png";
   const consultLabel = data.consultationType === "video" ? "📹 Video Consultation" : "🏥 In-Person (OPD)";
 
