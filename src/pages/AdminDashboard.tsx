@@ -64,6 +64,7 @@ const AdminDashboard = () => {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [doctorFilter, setDoctorFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("appointments");
   const navigate = useNavigate();
   const { toast } = useToast();
