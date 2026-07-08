@@ -18,6 +18,7 @@ import BlogManagement from "@/components/admin/BlogManagement";
 import MessagesHub from "@/components/admin/MessagesHub";
 import NotificationBell from "@/components/admin/NotificationBell";
 import DoctorAvailability from "@/components/admin/DoctorAvailability";
+import ExcelReportButton from "@/components/admin/ExcelReportButton";
 
 interface Appointment {
   id: string;
