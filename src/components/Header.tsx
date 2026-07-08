@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Phone, Clock, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import aviraLogo from "@/assets/avira-logo.png";
 
 const navLinks = [
