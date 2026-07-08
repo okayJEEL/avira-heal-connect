@@ -175,7 +175,11 @@ const AdminDashboard = () => {
                           apt.mobile.includes(searchTerm) ||
                           apt.department?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || apt.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesDoctor =
+      doctorFilter === "all" ||
+      (doctorFilter === "vivek" && apt.department !== "Aesthetic Physician & Cosmetologist") ||
+      (doctorFilter === "preeti" && apt.department === "Aesthetic Physician & Cosmetologist");
+    return matchesSearch && matchesStatus && matchesDoctor;
   });
 
   const todayAppointments = doctorFilteredAppointments.filter(apt => {
