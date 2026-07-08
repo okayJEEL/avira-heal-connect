@@ -376,7 +376,63 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
     setDialogDate(null);
   };
 
+  // Save multi-day leave (inclusive range)
+  const saveRangeLeave = async () => {
+    if (!selectedDoctor || !rangeFrom || !rangeTo) {
+      toast({ title: "Pick both dates", variant: "destructive" });
+      return;
+    }
+    if (rangeFrom > rangeTo) {
+      toast({ title: "Start date must be before end date", variant: "destructive" });
+      return;
+    }
+    setSavingRange(true);
+    const dates: string[] = [];
+    const cursor = new Date(`${rangeFrom}T00:00:00`);
+    const end = new Date(`${rangeTo}T00:00:00`);
+    while (cursor <= end) {
+      dates.push(format(cursor, "yyyy-MM-dd"));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    // Clear existing overrides in that range then insert leaves
+    await supabase
+      .from("doctor_date_overrides")
+      .delete()
+      .eq("doctor_id", selectedDoctor)
+      .in("date", dates);
+    const rows = dates.map((d) => ({
+      doctor_id: selectedDoctor,
+      date: d,
+      type: "leave",
+      note: rangeNote || null,
+      start_time: null,
+      end_time: null,
+      slot_minutes: null,
+    }));
+    const { error } = await supabase.from("doctor_date_overrides").insert(rows);
+    setSavingRange(false);
+    if (error) {
+      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `Leave marked for ${dates.length} day${dates.length === 1 ? "" : "s"}` });
+    setRangeFrom("");
+    setRangeTo("");
+    setRangeNote("");
+    await reloadOverrides();
+  };
+
   const existingOverride = dialogDate ? overrideMap.get(format(dialogDate, "yyyy-MM-dd")) : null;
+  const today = todayStr();
+  const upcomingOverrides = useMemo(
+    () => [...overrides].filter((o) => o.date >= today).sort((a, b) => a.date.localeCompare(b.date)),
+    [overrides, today]
+  );
+  const pastOverrides = useMemo(
+    () => [...overrides].filter((o) => o.date < today).sort((a, b) => b.date.localeCompare(a.date)),
+    [overrides, today]
+  );
+
 
   // Non-admin doctor without a mapping yet
   if (!isAdmin && mappingLoaded && !mySlug) {
