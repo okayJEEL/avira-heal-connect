@@ -16,7 +16,52 @@ const albums = [
 ];
 
 // Placeholder: photos will be added later per album
-const albumPhotos: Record<string, string[]> = {};
+const albumPhotos: Record<string, string[]> = {
+  reception: [
+    "https://i.ibb.co/B24TNNrP/Whats-App-Image-2026-07-05-at-1-14-06-PM-1.jpg",
+    "https://i.ibb.co/6Rm9Vm83/Whats-App-Image-2026-07-05-at-1-14-06-PM-2.jpg",
+    "https://i.ibb.co/chbP6yxf/Whats-App-Image-2026-07-05-at-1-14-07-PM.jpg",
+  ],
+  lobby: [
+    "https://i.ibb.co/zhLtqsGB/Whats-App-Image-2026-07-05-at-1-13-30-PM-1.jpg",
+    "https://i.ibb.co/0yzwcJ9Y/Whats-App-Image-2026-07-05-at-1-13-33-PM-1.jpg",
+    "https://i.ibb.co/5WPJXmnN/Whats-App-Image-2026-07-05-at-1-13-35-PM.jpg",
+    "https://i.ibb.co/Z6bBJqbb/Whats-App-Image-2026-07-05-at-1-13-48-PM.jpg",
+    "https://i.ibb.co/xSbWMpF7/Whats-App-Image-2026-07-05-at-1-14-06-PM.jpg",
+  ],
+  "doctors-cabin": [
+    "https://i.ibb.co/6RY9YK6f/Whats-App-Image-2026-07-05-at-1-13-30-PM.jpg",
+    "https://i.ibb.co/Z1Gq1QMZ/Whats-App-Image-2026-07-05-at-1-14-15-PM.jpg",
+    "https://i.ibb.co/B2vypNN7/Whats-App-Image-2026-07-05-at-1-14-21-PM-1.jpg",
+    "https://i.ibb.co/zH2Bp50F/Whats-App-Image-2026-07-05-at-1-14-21-PM-2.jpg",
+    "https://i.ibb.co/RT9HQrKj/Whats-App-Image-2026-07-05-at-1-14-21-PM.jpg",
+  ],
+  pharmacy: [
+    "https://i.ibb.co/r2fhjGwz/Whats-App-Image-2026-07-05-at-1-14-07-PM-1.jpg",
+  ],
+  icu: [
+    "https://i.ibb.co/gM3P6NDF/Whats-App-Image-2026-07-05-at-1-14-24-PM-2.jpg",
+    "https://i.ibb.co/0yvY8TBT/Whats-App-Image-2026-07-05-at-1-14-26-PM-2.jpg",
+  ],
+  instruments: [
+    "https://i.ibb.co/F40SvZr7/Whats-App-Image-2026-07-05-at-1-13-31-PM.jpg",
+  ],
+  "patient-rooms": [
+    "https://i.ibb.co/nFZZVqK/Whats-App-Image-2026-07-05-at-1-13-30-PM-2.jpg",
+    "https://i.ibb.co/WWyqJ9VV/Whats-App-Image-2026-07-05-at-1-13-32-PM-1.jpg",
+    "https://i.ibb.co/ZzVxmz1P/Whats-App-Image-2026-07-05-at-1-13-32-PM.jpg",
+    "https://i.ibb.co/WjRCM6Z/Whats-App-Image-2026-07-05-at-1-13-33-PM.jpg",
+    "https://i.ibb.co/V0TszK2J/Whats-App-Image-2026-07-05-at-1-13-34-PM-1.jpg",
+    "https://i.ibb.co/TMzw31jg/Whats-App-Image-2026-07-05-at-1-13-49-PM.jpg",
+    "https://i.ibb.co/rfTb2xLM/Whats-App-Image-2026-07-05-at-1-13-55-PM.jpg",
+    "https://i.ibb.co/7dDgxmy9/Whats-App-Image-2026-07-05-at-1-13-56-PM.jpg",
+    "https://i.ibb.co/c7mhL1q/Whats-App-Image-2026-07-05-at-1-14-04-PM.jpg",
+  ],
+  "general-ward": [
+    "https://i.ibb.co/8gsmYh54/Whats-App-Image-2026-07-05-at-1-14-05-PM-1.jpg",
+    "https://i.ibb.co/KzF9npYP/Whats-App-Image-2026-07-05-at-1-14-05-PM.jpg",
+  ],
+};
 
 const Gallery = () => {
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
