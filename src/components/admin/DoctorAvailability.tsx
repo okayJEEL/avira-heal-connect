@@ -83,6 +83,16 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   const [dialogEnd, setDialogEnd] = useState("13:00");
   const [dialogSlot, setDialogSlot] = useState(15);
   const [dialogNote, setDialogNote] = useState("");
+  const [dialogBookings, setDialogBookings] = useState<number>(0);
+
+  // Multi-day leave state
+  const [rangeFrom, setRangeFrom] = useState("");
+  const [rangeTo, setRangeTo] = useState("");
+  const [rangeNote, setRangeNote] = useState("");
+  const [savingRange, setSavingRange] = useState(false);
+
+  // Toggle for past overrides
+  const [showPast, setShowPast] = useState(false);
 
   // Determine current user's doctor mapping (for non-admin doctors)
   useEffect(() => {
