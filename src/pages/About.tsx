@@ -20,6 +20,52 @@ const About = () => {
           <h1 className="text-3xl md:text-4xl font-heading font-bold text-center mb-2">About Avira Hospital</h1>
           <p className="text-center text-muted-foreground mb-12">Dedicated to providing exceptional healthcare</p>
 
+          {/* Team Photo Feature */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mb-14"
+          >
+            <div className="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-card">
+              {/* Decorative corner accents */}
+              <div className="absolute top-0 left-0 w-20 h-20 md:w-32 md:h-32 border-t-4 border-l-4 border-primary/30 rounded-tl-2xl md:rounded-tl-3xl z-10 pointer-events-none" />
+              <div className="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 border-t-4 border-r-4 border-primary/30 rounded-tr-2xl md:rounded-tr-3xl z-10 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-20 h-20 md:w-32 md:h-32 border-b-4 border-l-4 border-primary/30 rounded-bl-2xl md:rounded-bl-3xl z-10 pointer-events-none" />
+              <div className="absolute bottom-0 right-0 w-20 h-20 md:w-32 md:h-32 border-b-4 border-r-4 border-primary/30 rounded-br-2xl md:rounded-br-3xl z-10 pointer-events-none" />
+
+              <div className="relative aspect-[16/9] md:aspect-[21/9]">
+                <img
+                  src={teamPhotoAsset.url}
+                  alt="The Avira Hospital team standing together at the hospital entrance"
+                  className="w-full h-full object-cover object-center"
+                  loading="lazy"
+                />
+                {/* Soft gradient overlay for depth */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                
+                {/* Caption overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                    className="bg-card/90 backdrop-blur-sm rounded-xl px-5 py-4 md:px-8 md:py-5 inline-block max-w-2xl"
+                  >
+                    <p className="text-sm md:text-base font-heading font-semibold text-foreground">
+                      The Avira Team
+                    </p>
+                    <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                      United in our mission to deliver compassionate, world-class care to every patient.
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
