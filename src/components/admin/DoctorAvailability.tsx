@@ -536,52 +536,76 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {weekly.map((row, idx) => (
-                  <div
-                    key={row.weekday}
-                    className={cn(
-                      "grid grid-cols-12 gap-3 items-center p-3 rounded-lg border",
-                      row.is_available ? "bg-card" : "bg-muted/40"
-                    )}
-                  >
-                    <div className="col-span-12 sm:col-span-3 flex items-center gap-3">
-                      <Switch
-                        checked={row.is_available}
-                        onCheckedChange={(v) => updateWeekly(idx, { is_available: v })}
-                      />
-                      <span className="font-medium">{WEEKDAYS[row.weekday]}</span>
+                {weekly.map((row, idx) => {
+                  const slots = slotCount(row);
+                  return (
+                    <div
+                      key={row.weekday}
+                      className={cn(
+                        "grid grid-cols-12 gap-3 items-center p-3 rounded-lg border transition-colors",
+                        row.is_available ? "bg-card" : "bg-muted/40"
+                      )}
+                    >
+                      <div className="col-span-12 sm:col-span-3 flex items-center gap-3">
+                        <Switch
+                          checked={row.is_available}
+                          onCheckedChange={(v) => updateWeekly(idx, { is_available: v })}
+                        />
+                        <div className="min-w-0">
+                          <div className="font-medium leading-tight">{WEEKDAYS[row.weekday]}</div>
+                          {row.is_available ? (
+                            <div className="text-[11px] text-muted-foreground">{slots} slot{slots === 1 ? "" : "s"}</div>
+                          ) : (
+                            <div className="text-[11px] text-muted-foreground">Closed</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="col-span-4 sm:col-span-2">
+                        <Label className="text-xs text-muted-foreground">Start</Label>
+                        <Input
+                          type="time"
+                          value={row.start_time}
+                          disabled={!row.is_available}
+                          onChange={(e) => updateWeekly(idx, { start_time: e.target.value })}
+                        />
+                      </div>
+                      <div className="col-span-4 sm:col-span-2">
+                        <Label className="text-xs text-muted-foreground">End</Label>
+                        <Input
+                          type="time"
+                          value={row.end_time}
+                          disabled={!row.is_available}
+                          onChange={(e) => updateWeekly(idx, { end_time: e.target.value })}
+                        />
+                      </div>
+                      <div className="col-span-4 sm:col-span-2">
+                        <Label className="text-xs text-muted-foreground">Slot (min)</Label>
+                        <Input
+                          type="number"
+                          min={5}
+                          max={120}
+                          value={row.slot_minutes}
+                          disabled={!row.is_available}
+                          onChange={(e) => updateWeekly(idx, { slot_minutes: parseInt(e.target.value) || 15 })}
+                        />
+                      </div>
+                      <div className="col-span-12 sm:col-span-3 flex sm:justify-end">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5"
+                          disabled={!row.is_available}
+                          onClick={() => copyToAllWorkingDays(idx)}
+                          title="Copy these hours to every other working day"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          Copy to all
+                        </Button>
+                      </div>
                     </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <Label className="text-xs text-muted-foreground">Start</Label>
-                      <Input
-                        type="time"
-                        value={row.start_time}
-                        disabled={!row.is_available}
-                        onChange={(e) => updateWeekly(idx, { start_time: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <Label className="text-xs text-muted-foreground">End</Label>
-                      <Input
-                        type="time"
-                        value={row.end_time}
-                        disabled={!row.is_available}
-                        onChange={(e) => updateWeekly(idx, { end_time: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <Label className="text-xs text-muted-foreground">Slot (min)</Label>
-                      <Input
-                        type="number"
-                        min={5}
-                        max={120}
-                        value={row.slot_minutes}
-                        disabled={!row.is_available}
-                        onChange={(e) => updateWeekly(idx, { slot_minutes: parseInt(e.target.value) || 15 })}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <div className="flex justify-end pt-2">
                   <Button onClick={saveWeekly} disabled={saving}>
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
