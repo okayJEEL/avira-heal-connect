@@ -2,6 +2,7 @@ import { Heart, Award, Users, Lightbulb } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import teamPhotoAsset from "@/assets/avira-team.jpg.asset.json";
 
 const values = [
   { icon: Heart, title: "Compassion", desc: "We treat every patient with empathy, kindness, and respect." },
