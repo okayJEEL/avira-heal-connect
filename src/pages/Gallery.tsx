@@ -65,9 +65,28 @@ const albumPhotos: Record<string, string[]> = {
 
 const Gallery = () => {
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const currentAlbum = albums.find((a) => a.id === selectedAlbum);
   const photos = selectedAlbum ? albumPhotos[selectedAlbum] || [] : [];
+  const scrollable = photos.length > 6;
+
+  const closeLightbox = () => setLightboxIndex(null);
+  const prevPhoto = () =>
+    setLightboxIndex((i) => (i === null ? i : (i - 1 + photos.length) % photos.length));
+  const nextPhoto = () =>
+    setLightboxIndex((i) => (i === null ? i : (i + 1) % photos.length));
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") prevPhoto();
+      if (e.key === "ArrowRight") nextPhoto();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIndex, photos.length]);
 
   return (
     <div className="min-h-screen">
@@ -114,13 +133,20 @@ const Gallery = () => {
           ) : (
             /* Album Detail View */
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <button
-                onClick={() => setSelectedAlbum(null)}
-                className="flex items-center gap-2 text-primary font-medium mb-6 hover:underline"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Albums
-              </button>
+              <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+                <button
+                  onClick={() => setSelectedAlbum(null)}
+                  className="flex items-center gap-2 text-primary font-medium hover:underline"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to Albums
+                </button>
+                {photos.length > 0 && (
+                  <span className="text-xs font-medium text-muted-foreground bg-card px-3 py-1 rounded-full border border-border/60">
+                    {photos.length} {photos.length === 1 ? "photo" : "photos"}
+                  </span>
+                )}
+              </div>
 
               <h2 className="text-2xl font-heading font-bold mb-6 flex items-center gap-3">
                 <span className="text-3xl">{currentAlbum?.icon}</span>
@@ -128,18 +154,35 @@ const Gallery = () => {
               </h2>
 
               {photos.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {photos.map((photo, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: idx * 0.05 }}
-                      className="rounded-xl overflow-hidden border border-border/50 shadow-sm"
-                    >
-                      <img src={photo} alt={`${currentAlbum?.label} ${idx + 1}`} className="w-full h-48 object-cover" />
-                    </motion.div>
-                  ))}
+                <div
+                  className={
+                    scrollable
+                      ? "max-h-[70vh] overflow-y-auto pr-2 -mr-2 rounded-xl scroll-smooth [scrollbar-width:thin]"
+                      : ""
+                  }
+                >
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                    {photos.map((photo, idx) => (
+                      <motion.button
+                        type="button"
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: Math.min(idx * 0.04, 0.4) }}
+                        whileHover={{ scale: 1.03 }}
+                        onClick={() => setLightboxIndex(idx)}
+                        className="group relative aspect-square rounded-xl overflow-hidden border border-border/50 shadow-sm hover:shadow-xl transition-shadow bg-muted cursor-zoom-in"
+                      >
+                        <img
+                          src={photo}
+                          alt={`${currentAlbum?.label} ${idx + 1}`}
+                          loading="lazy"
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </motion.button>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className="bg-card rounded-xl p-12 text-center border border-border/50">
@@ -154,6 +197,68 @@ const Gallery = () => {
           )}
         </div>
       </section>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightboxIndex !== null && photos[lightboxIndex] && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeLightbox}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                closeLightbox();
+              }}
+              aria-label="Close"
+              className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            {photos.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    prevPhoto();
+                  }}
+                  aria-label="Previous"
+                  className="absolute left-4 md:left-8 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    nextPhoto();
+                  }}
+                  aria-label="Next"
+                  className="absolute right-4 md:right-8 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+            <motion.img
+              key={lightboxIndex}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2 }}
+              src={photos[lightboxIndex]}
+              alt={`${currentAlbum?.label} ${lightboxIndex + 1}`}
+              onClick={(e) => e.stopPropagation()}
+              className="max-h-[88vh] max-w-[92vw] object-contain rounded-lg shadow-2xl"
+            />
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm font-medium bg-white/10 px-3 py-1 rounded-full">
+              {lightboxIndex + 1} / {photos.length}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Footer />
     </div>
   );
