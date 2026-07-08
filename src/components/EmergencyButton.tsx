@@ -8,7 +8,7 @@ const EmergencyButton = () => {
   const location = useLocation();
 
   // Hide on staff portal routes
-  if (location.pathname.startsWith("/staff-login") || location.pathname.startsWith("/admin")) {
+  if (location.pathname.startsWith("/staff-portal") || location.pathname.startsWith("/admin")) {
     return null;
   }
 

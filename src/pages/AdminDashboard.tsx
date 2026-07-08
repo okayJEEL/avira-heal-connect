@@ -133,7 +133,7 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/staff-login");
+    navigate("/staff-portal");
   };
 
   const updateAppointmentStatus = async (id: string, status: string) => {

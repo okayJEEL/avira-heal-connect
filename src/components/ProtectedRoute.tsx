@@ -41,7 +41,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!session || !hasRole) {
-    return <Navigate to="/staff-login" replace />;
+    return <Navigate to="/staff-portal" replace />;
   }
 
   return <>{children}</>;
