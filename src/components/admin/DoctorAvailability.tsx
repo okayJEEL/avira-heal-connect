@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, Trash2, CalendarDays, Clock } from "lucide-react";
+import { Loader2, Save, Trash2, CalendarDays, Clock, Copy, CalendarRange, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -52,6 +52,18 @@ const defaultWeekly = (): WeeklyRow[] =>
     slot_minutes: 15,
   }));
 
+// Compute number of bookable slots for a weekday config
+const slotCount = (row: WeeklyRow): number => {
+  if (!row.is_available) return 0;
+  const [sh, sm] = row.start_time.split(":").map(Number);
+  const [eh, em] = row.end_time.split(":").map(Number);
+  const mins = eh * 60 + em - (sh * 60 + sm);
+  if (mins <= 0 || !row.slot_minutes) return 0;
+  return Math.floor(mins / row.slot_minutes);
+};
+
+const todayStr = () => format(new Date(), "yyyy-MM-dd");
+
 const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   const { toast } = useToast();
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
@@ -71,6 +83,16 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   const [dialogEnd, setDialogEnd] = useState("13:00");
   const [dialogSlot, setDialogSlot] = useState(15);
   const [dialogNote, setDialogNote] = useState("");
+  const [dialogBookings, setDialogBookings] = useState<number>(0);
+
+  // Multi-day leave state
+  const [rangeFrom, setRangeFrom] = useState("");
+  const [rangeTo, setRangeTo] = useState("");
+  const [rangeNote, setRangeNote] = useState("");
+  const [savingRange, setSavingRange] = useState(false);
+
+  // Toggle for past overrides
+  const [showPast, setShowPast] = useState(false);
 
   // Determine current user's doctor mapping (for non-admin doctors)
   useEffect(() => {
@@ -229,10 +251,45 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
     [overrides]
   );
 
-  const openDateDialog = (date: Date) => {
+  // Copy one weekday's hours to every other working day
+  const copyToAllWorkingDays = (srcIdx: number) => {
+    const src = weekly[srcIdx];
+    setWeekly((prev) =>
+      prev.map((r, i) =>
+        i === srcIdx
+          ? r
+          : {
+              ...r,
+              start_time: r.is_available ? src.start_time : r.start_time,
+              end_time: r.is_available ? src.end_time : r.end_time,
+              slot_minutes: r.is_available ? src.slot_minutes : r.slot_minutes,
+            }
+      )
+    );
+    toast({ title: `Copied ${WEEKDAYS[src.weekday]}'s hours to other working days` });
+  };
+
+  // Count active appointments on a given date for the selected doctor's department
+  const countBookingsOnDate = async (dateStr: string): Promise<number> => {
+    const fromIso = new Date(`${dateStr}T00:00:00+05:30`).toISOString();
+    const toIso = new Date(`${dateStr}T23:59:59+05:30`).toISOString();
+    const dept = doctors.find((d) => d.id === selectedDoctor)?.specialty;
+    let q = supabase
+      .from("appointments")
+      .select("id", { count: "exact", head: true })
+      .gte("time_slot", fromIso)
+      .lte("time_slot", toIso)
+      .in("status", ["pending", "confirmed"]);
+    if (dept) q = q.eq("department", dept);
+    const { count } = await q;
+    return count || 0;
+  };
+
+  const openDateDialog = async (date: Date) => {
     const key = format(date, "yyyy-MM-dd");
     const existing = overrideMap.get(key);
     setDialogDate(date);
+    setDialogBookings(0);
     if (existing) {
       setDialogType(existing.type);
       setDialogStart(existing.start_time || "10:00");
@@ -246,6 +303,9 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
       setDialogSlot(15);
       setDialogNote("");
     }
+    // Load bookings count in background
+    const n = await countBookingsOnDate(key);
+    setDialogBookings(n);
   };
 
   const reloadOverrides = async () => {
@@ -316,7 +376,63 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
     setDialogDate(null);
   };
 
+  // Save multi-day leave (inclusive range)
+  const saveRangeLeave = async () => {
+    if (!selectedDoctor || !rangeFrom || !rangeTo) {
+      toast({ title: "Pick both dates", variant: "destructive" });
+      return;
+    }
+    if (rangeFrom > rangeTo) {
+      toast({ title: "Start date must be before end date", variant: "destructive" });
+      return;
+    }
+    setSavingRange(true);
+    const dates: string[] = [];
+    const cursor = new Date(`${rangeFrom}T00:00:00`);
+    const end = new Date(`${rangeTo}T00:00:00`);
+    while (cursor <= end) {
+      dates.push(format(cursor, "yyyy-MM-dd"));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    // Clear existing overrides in that range then insert leaves
+    await supabase
+      .from("doctor_date_overrides")
+      .delete()
+      .eq("doctor_id", selectedDoctor)
+      .in("date", dates);
+    const rows = dates.map((d) => ({
+      doctor_id: selectedDoctor,
+      date: d,
+      type: "leave",
+      note: rangeNote || null,
+      start_time: null,
+      end_time: null,
+      slot_minutes: null,
+    }));
+    const { error } = await supabase.from("doctor_date_overrides").insert(rows);
+    setSavingRange(false);
+    if (error) {
+      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `Leave marked for ${dates.length} day${dates.length === 1 ? "" : "s"}` });
+    setRangeFrom("");
+    setRangeTo("");
+    setRangeNote("");
+    await reloadOverrides();
+  };
+
   const existingOverride = dialogDate ? overrideMap.get(format(dialogDate, "yyyy-MM-dd")) : null;
+  const today = todayStr();
+  const upcomingOverrides = useMemo(
+    () => [...overrides].filter((o) => o.date >= today).sort((a, b) => a.date.localeCompare(b.date)),
+    [overrides, today]
+  );
+  const pastOverrides = useMemo(
+    () => [...overrides].filter((o) => o.date < today).sort((a, b) => b.date.localeCompare(a.date)),
+    [overrides, today]
+  );
+
 
   // Non-admin doctor without a mapping yet
   if (!isAdmin && mappingLoaded && !mySlug) {
@@ -420,52 +536,76 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {weekly.map((row, idx) => (
-                  <div
-                    key={row.weekday}
-                    className={cn(
-                      "grid grid-cols-12 gap-3 items-center p-3 rounded-lg border",
-                      row.is_available ? "bg-card" : "bg-muted/40"
-                    )}
-                  >
-                    <div className="col-span-12 sm:col-span-3 flex items-center gap-3">
-                      <Switch
-                        checked={row.is_available}
-                        onCheckedChange={(v) => updateWeekly(idx, { is_available: v })}
-                      />
-                      <span className="font-medium">{WEEKDAYS[row.weekday]}</span>
+                {weekly.map((row, idx) => {
+                  const slots = slotCount(row);
+                  return (
+                    <div
+                      key={row.weekday}
+                      className={cn(
+                        "grid grid-cols-12 gap-3 items-center p-3 rounded-lg border transition-colors",
+                        row.is_available ? "bg-card" : "bg-muted/40"
+                      )}
+                    >
+                      <div className="col-span-12 sm:col-span-3 flex items-center gap-3">
+                        <Switch
+                          checked={row.is_available}
+                          onCheckedChange={(v) => updateWeekly(idx, { is_available: v })}
+                        />
+                        <div className="min-w-0">
+                          <div className="font-medium leading-tight">{WEEKDAYS[row.weekday]}</div>
+                          {row.is_available ? (
+                            <div className="text-[11px] text-muted-foreground">{slots} slot{slots === 1 ? "" : "s"}</div>
+                          ) : (
+                            <div className="text-[11px] text-muted-foreground">Closed</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="col-span-4 sm:col-span-2">
+                        <Label className="text-xs text-muted-foreground">Start</Label>
+                        <Input
+                          type="time"
+                          value={row.start_time}
+                          disabled={!row.is_available}
+                          onChange={(e) => updateWeekly(idx, { start_time: e.target.value })}
+                        />
+                      </div>
+                      <div className="col-span-4 sm:col-span-2">
+                        <Label className="text-xs text-muted-foreground">End</Label>
+                        <Input
+                          type="time"
+                          value={row.end_time}
+                          disabled={!row.is_available}
+                          onChange={(e) => updateWeekly(idx, { end_time: e.target.value })}
+                        />
+                      </div>
+                      <div className="col-span-4 sm:col-span-2">
+                        <Label className="text-xs text-muted-foreground">Slot (min)</Label>
+                        <Input
+                          type="number"
+                          min={5}
+                          max={120}
+                          value={row.slot_minutes}
+                          disabled={!row.is_available}
+                          onChange={(e) => updateWeekly(idx, { slot_minutes: parseInt(e.target.value) || 15 })}
+                        />
+                      </div>
+                      <div className="col-span-12 sm:col-span-3 flex sm:justify-end">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5"
+                          disabled={!row.is_available}
+                          onClick={() => copyToAllWorkingDays(idx)}
+                          title="Copy these hours to every other working day"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          Copy to all
+                        </Button>
+                      </div>
                     </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <Label className="text-xs text-muted-foreground">Start</Label>
-                      <Input
-                        type="time"
-                        value={row.start_time}
-                        disabled={!row.is_available}
-                        onChange={(e) => updateWeekly(idx, { start_time: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <Label className="text-xs text-muted-foreground">End</Label>
-                      <Input
-                        type="time"
-                        value={row.end_time}
-                        disabled={!row.is_available}
-                        onChange={(e) => updateWeekly(idx, { end_time: e.target.value })}
-                      />
-                    </div>
-                    <div className="col-span-4 sm:col-span-3">
-                      <Label className="text-xs text-muted-foreground">Slot (min)</Label>
-                      <Input
-                        type="number"
-                        min={5}
-                        max={120}
-                        value={row.slot_minutes}
-                        disabled={!row.is_available}
-                        onChange={(e) => updateWeekly(idx, { slot_minutes: parseInt(e.target.value) || 15 })}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <div className="flex justify-end pt-2">
                   <Button onClick={saveWeekly} disabled={saving}>
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
@@ -503,23 +643,57 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-2">
-                    <h4 className="font-medium text-sm">Upcoming overrides</h4>
-                    {overrides.length === 0 && (
-                      <p className="text-sm text-muted-foreground">No overrides set.</p>
-                    )}
-                    <div className="space-y-2 max-h-96 overflow-auto">
-                      {[...overrides]
-                        .sort((a, b) => a.date.localeCompare(b.date))
-                        .map((o) => (
+                  <div className="flex-1 space-y-4">
+                    {/* Multi-day leave */}
+                    <div className="rounded-lg border p-3 bg-muted/30 space-y-3">
+                      <div className="flex items-center gap-2 font-medium text-sm">
+                        <CalendarRange className="w-4 h-4 text-primary" />
+                        Mark multi-day leave
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-xs">From</Label>
+                          <Input type="date" value={rangeFrom} onChange={(e) => setRangeFrom(e.target.value)} />
+                        </div>
+                        <div>
+                          <Label className="text-xs">To</Label>
+                          <Input type="date" value={rangeTo} onChange={(e) => setRangeTo(e.target.value)} />
+                        </div>
+                      </div>
+                      <Input
+                        placeholder="Optional note (e.g. Diwali holiday)"
+                        value={rangeNote}
+                        onChange={(e) => setRangeNote(e.target.value)}
+                      />
+                      <Button
+                        size="sm"
+                        onClick={saveRangeLeave}
+                        disabled={savingRange || !rangeFrom || !rangeTo}
+                        className="w-full"
+                      >
+                        {savingRange ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                        Save leave range
+                      </Button>
+                    </div>
+
+                    {/* Upcoming overrides */}
+                    <div>
+                      <h4 className="font-medium text-sm mb-2 flex items-center justify-between">
+                        <span>Upcoming ({upcomingOverrides.length})</span>
+                      </h4>
+                      {upcomingOverrides.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No upcoming overrides.</p>
+                      )}
+                      <div className="space-y-2 max-h-72 overflow-auto">
+                        {upcomingOverrides.map((o) => (
                           <div
                             key={o.date}
-                            className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/40 cursor-pointer"
+                            className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/40 cursor-pointer transition-colors"
                             onClick={() => openDateDialog(new Date(o.date + "T00:00:00"))}
                           >
-                            <div>
+                            <div className="min-w-0">
                               <div className="font-medium">{format(new Date(o.date + "T00:00:00"), "EEE, dd MMM yyyy")}</div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-muted-foreground truncate">
                                 {o.type === "leave" ? "On leave" : `${o.start_time} – ${o.end_time} (${o.slot_minutes} min)`}
                                 {o.note ? ` · ${o.note}` : ""}
                               </div>
@@ -527,7 +701,39 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                             <Badge variant={o.type === "leave" ? "destructive" : "secondary"}>{o.type}</Badge>
                           </div>
                         ))}
+                      </div>
                     </div>
+
+                    {/* Past overrides (collapsible) */}
+                    {pastOverrides.length > 0 && (
+                      <div>
+                        <button
+                          onClick={() => setShowPast((s) => !s)}
+                          className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {showPast ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                          Past overrides ({pastOverrides.length})
+                        </button>
+                        {showPast && (
+                          <div className="space-y-2 max-h-64 overflow-auto mt-2">
+                            {pastOverrides.map((o) => (
+                              <div
+                                key={o.date}
+                                className="flex items-center justify-between p-2.5 rounded-lg border bg-muted/20 opacity-70"
+                              >
+                                <div className="min-w-0">
+                                  <div className="text-sm">{format(new Date(o.date + "T00:00:00"), "dd MMM yyyy")}</div>
+                                  <div className="text-[11px] text-muted-foreground truncate">
+                                    {o.type === "leave" ? "Was on leave" : `${o.start_time} – ${o.end_time}`}
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className="text-[10px]">{o.type}</Badge>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -544,6 +750,15 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {dialogBookings > 0 && dialogType === "leave" && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+                <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-medium">{dialogBookings} active appointment{dialogBookings === 1 ? "" : "s"} on this date</div>
+                  <div className="text-xs opacity-90">Please contact the patient{dialogBookings === 1 ? "" : "s"} to reschedule before marking leave.</div>
+                </div>
+              </div>
+            )}
             <div>
               <Label>Type</Label>
               <Select value={dialogType} onValueChange={(v) => setDialogType(v as "leave" | "custom")}>
