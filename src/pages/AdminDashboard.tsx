@@ -64,6 +64,7 @@ const AdminDashboard = () => {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [doctorFilter, setDoctorFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("appointments");
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -174,7 +175,11 @@ const AdminDashboard = () => {
                           apt.mobile.includes(searchTerm) ||
                           apt.department?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || apt.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesDoctor =
+      doctorFilter === "all" ||
+      (doctorFilter === "vivek" && apt.department !== "Aesthetic Physician & Cosmetologist") ||
+      (doctorFilter === "preeti" && apt.department === "Aesthetic Physician & Cosmetologist");
+    return matchesSearch && matchesStatus && matchesDoctor;
   });
 
   const todayAppointments = doctorFilteredAppointments.filter(apt => {
@@ -471,6 +476,19 @@ const AdminDashboard = () => {
                       <SelectItem value="completed">Completed</SelectItem>
                     </SelectContent>
                   </Select>
+                  {!isDoctor && (
+                    <Select value={doctorFilter} onValueChange={setDoctorFilter}>
+                      <SelectTrigger className="w-[220px]">
+                        <Users className="w-4 h-4 mr-2" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Doctors</SelectItem>
+                        <SelectItem value="vivek">Dr. Vivek Siddhpura</SelectItem>
+                        <SelectItem value="preeti">Dr. Preeti Siddhpura</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
