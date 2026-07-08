@@ -273,7 +273,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   const countBookingsOnDate = async (dateStr: string): Promise<number> => {
     const fromIso = new Date(`${dateStr}T00:00:00+05:30`).toISOString();
     const toIso = new Date(`${dateStr}T23:59:59+05:30`).toISOString();
-    const dept = doctors.find((d) => d.id === selectedDoctor)?.department;
+    const dept = doctors.find((d) => d.id === selectedDoctor)?.specialty;
     let q = supabase
       .from("appointments")
       .select("id", { count: "exact", head: true })
