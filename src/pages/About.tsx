@@ -144,7 +144,7 @@ const About = () => {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { value: "15+", label: "Years of Service" },
+              { value: "10+ Years", label: "Experience" },
               { value: "2+", label: "Medical Experts" },
               { value: "10,000+", label: "Happy Patients" },
               { value: "24/7", label: "Emergency Care" },
