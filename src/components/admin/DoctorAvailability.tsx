@@ -750,6 +750,15 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {dialogBookings > 0 && dialogType === "leave" && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+                <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-medium">{dialogBookings} active appointment{dialogBookings === 1 ? "" : "s"} on this date</div>
+                  <div className="text-xs opacity-90">Please contact the patient{dialogBookings === 1 ? "" : "s"} to reschedule before marking leave.</div>
+                </div>
+              </div>
+            )}
             <div>
               <Label>Type</Label>
               <Select value={dialogType} onValueChange={(v) => setDialogType(v as "leave" | "custom")}>
