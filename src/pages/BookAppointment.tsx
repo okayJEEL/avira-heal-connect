@@ -114,21 +114,15 @@ const BookAppointment = () => {
     if (!date || !selectedDoctor) return;
 
     const fetchBookedSlots = async () => {
-      const startOfSelectedDay = new Date(date);
-      startOfSelectedDay.setHours(0, 0, 0, 0);
-      const endOfSelectedDay = new Date(date);
-      endOfSelectedDay.setHours(23, 59, 59, 999);
-
-      const { data, error } = await supabase
-        .from("appointments")
-        .select("time_slot, status")
-        .gte("time_slot", startOfSelectedDay.toISOString())
-        .lte("time_slot", endOfSelectedDay.toISOString())
-        .eq("department", selectedDoctor.specialty)
-        .in("status", ["pending", "confirmed", "completed"]);
+      const { data, error } = await supabase.rpc("get_booked_slots", {
+        _department: selectedDoctor.specialty,
+        _day: format(date, "yyyy-MM-dd"),
+      });
 
       if (!error && data) {
-        const slots = data.map(apt => format(new Date(apt.time_slot), "h:mm a"));
+        const slots = (data as { time_slot: string }[]).map((apt) =>
+          format(new Date(apt.time_slot), "h:mm a")
+        );
         setBookedSlots(slots);
       }
     };
