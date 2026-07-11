@@ -22,7 +22,7 @@ const departments = [
       "Laser hair removal",
       "Dark circles, acne, acne scars treatment",
       "Botox, Thread Filler and Permanent Makeup",
-      "Medicated hair and chemical peeling",
+      "Medicated Facial and Chemical Peeling",
     ],
   },
 ];
