@@ -330,7 +330,7 @@ const AdminDashboard = () => {
         )}
 
         {/* Quick Nav Buttons */}
-        <div className={`grid gap-4 ${isDoctor ? "grid-cols-2 md:grid-cols-4" : "grid-cols-2 md:grid-cols-6"}`}>
+        <div className={`grid gap-2.5 sm:gap-4 grid-cols-3 ${isDoctor ? "md:grid-cols-4" : "sm:grid-cols-4 md:grid-cols-6"}`}>
           {[
             { label: "Appointments", icon: Calendar, tab: "appointments", show: true },
             { label: "Doctors", icon: Users, tab: "doctors", show: !isDoctor },
@@ -348,22 +348,22 @@ const AdminDashboard = () => {
                   setActiveTab(item.tab);
                 }
               }}
-              className={`group relative p-6 rounded-xl border bg-card shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in ${
+              className={`group relative p-3 sm:p-5 md:p-6 rounded-xl border bg-card shadow-sm hover:shadow-lg transition-all duration-300 md:hover:-translate-y-1 animate-fade-in ${
                 activeTab === item.tab && item.tab !== "website" ? "border-primary ring-2 ring-primary/20" : "border-border"
               }`}
             >
-              <div className="flex flex-col items-center gap-3">
-                <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                  <item.icon className="w-7 h-7 text-primary" />
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                  <item.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
                 </div>
-                <span className="font-medium text-foreground">{item.label}</span>
+                <span className="font-medium text-foreground text-[11px] sm:text-sm leading-tight text-center">{item.label}</span>
               </div>
             </button>
           ))}
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full mb-6 ${isDoctor ? "grid-cols-4" : "grid-cols-6"}`}>
+          <TabsList className={`hidden md:grid w-full mb-6 ${isDoctor ? "grid-cols-4" : "grid-cols-6"}`}>
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {isDoctor ? "My Appointments" : "Appointments"}
@@ -394,9 +394,10 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="appointments" className="space-y-6">
+          <TabsContent value="appointments" className="space-y-5 md:space-y-6">
             {/* Stats */}
-            <div className={`grid grid-cols-1 gap-4 ${isDoctor ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
+            <div className={`grid grid-cols-2 gap-3 sm:gap-4 ${isDoctor ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
+
               <Card>
                 <CardContent className="flex items-center gap-4 p-6">
                   <div className="p-2 rounded-lg bg-primary/10">
