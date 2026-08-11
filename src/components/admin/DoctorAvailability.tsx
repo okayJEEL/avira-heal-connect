@@ -454,7 +454,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-3">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2">
               <CalendarDays className="w-5 h-5 text-primary" />
@@ -467,7 +467,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
             </p>
           </div>
           {isAdmin && (
-            <div className="w-64">
+            <div className="w-full sm:w-64">
               <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select doctor" />
@@ -498,14 +498,14 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
               <p className="text-sm text-muted-foreground">No staff accounts with the "doctor" role yet.</p>
             ) : (
               doctorUsers.map((u) => (
-                <div key={u.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border">
+                <div key={u.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 p-3 rounded-lg border">
                   <div className="min-w-0">
                     <div className="font-medium truncate">{u.name}</div>
                     <div className="text-xs text-muted-foreground truncate">
                       {u.slug ? `Linked to ${doctors.find((d) => d.id === u.slug)?.name || u.slug}` : "Not linked"}
                     </div>
                   </div>
-                  <div className="w-56">
+                  <div className="w-full sm:w-56">
                     <Select value={u.slug || "none"} onValueChange={(v) => assignSlugToUser(u.id, v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -528,7 +528,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
         <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin" /></div>
       ) : (
         <Tabs defaultValue="weekly">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mb-4">
             <TabsTrigger value="weekly">Weekly Schedule</TabsTrigger>
             <TabsTrigger value="calendar">Date Overrides</TabsTrigger>
           </TabsList>
@@ -547,7 +547,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                     <div
                       key={row.weekday}
                       className={cn(
-                        "grid grid-cols-12 gap-3 items-center p-3 rounded-lg border transition-colors",
+                        "grid grid-cols-12 gap-2 sm:gap-3 items-center p-2.5 sm:p-3 rounded-lg border transition-colors",
                         row.is_available ? "bg-card" : "bg-muted/40"
                       )}
                     >
@@ -631,7 +631,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col lg:flex-row gap-6">
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 flex flex-col items-center lg:items-start">
                     <Calendar
                       mode="single"
                       onSelect={(d) => d && openDateDialog(d)}
@@ -775,7 +775,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
               </Select>
             </div>
             {dialogType === "custom" && (
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <Label className="text-xs">Start</Label>
                   <Input type="time" value={dialogStart} onChange={(e) => setDialogStart(e.target.value)} />
