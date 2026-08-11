@@ -10,9 +10,9 @@ const items = [
 
 const StatsSection = () => {
   return (
-    <section className="relative -mt-12 z-10 px-4 md:px-8">
+    <section className="relative mt-8 md:-mt-12 z-10 px-4 md:px-8">
       <div className="container-custom max-w-5xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
           {items.map((item, i) => (
             <motion.div
               key={item.label}
