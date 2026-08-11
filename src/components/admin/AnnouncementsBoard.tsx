@@ -107,7 +107,7 @@ const AnnouncementsBoard = ({ isAdmin }: Props) => {
       {showForm && isAdmin && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
           <Card>
-            <CardContent className="p-5 space-y-3">
+            <CardContent className="p-4 sm:p-5 space-y-3">
               <div>
                 <Label>Title *</Label>
                 <Input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Announcement title" />
@@ -119,7 +119,7 @@ const AnnouncementsBoard = ({ isAdmin }: Props) => {
               <div>
                 <Label>Priority</Label>
                 <Select value={form.priority} onValueChange={v => setForm(p => ({ ...p, priority: v }))}>
-                  <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="w-full sm:w-[180px]"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="normal">Normal</SelectItem>
                     <SelectItem value="urgent">Urgent</SelectItem>
