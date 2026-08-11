@@ -587,7 +587,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                             onChange={(e) => updateWeekly(idx, { end_time: e.target.value })}
                           />
                         </div>
-                        <div className="min-w-0 col-span-2 sm:col-span-2">
+                        <div className="min-w-0 min-[420px]:col-span-2 sm:col-span-2">
                           <Label className="text-xs text-muted-foreground">Slot (min)</Label>
                           <Input
                             type="number"
