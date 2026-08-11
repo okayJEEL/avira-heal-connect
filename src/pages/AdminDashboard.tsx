@@ -239,7 +239,7 @@ const AdminDashboard = () => {
                 <div className="flex flex-col md:flex-row items-center">
                   {/* Doctor Photo */}
                   <motion.div 
-                    className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-primary-foreground/30 shadow-lg m-6 flex-shrink-0"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-primary-foreground/30 shadow-lg mt-5 mb-1 md:m-6 flex-shrink-0"
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
@@ -249,24 +249,24 @@ const AdminDashboard = () => {
 
                   {/* Welcome Text */}
                   <motion.div 
-                    className="flex-1 p-6 text-primary-foreground"
+                    className="flex-1 w-full p-5 sm:p-6 text-primary-foreground text-center md:text-left"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                   >
-                    <p className="text-sm font-medium opacity-80 flex items-center gap-1.5">
+                    <p className="text-sm font-medium opacity-80 flex items-center justify-center md:justify-start gap-1.5">
                       <Heart className="w-4 h-4" /> {greeting()}
                     </p>
-                    <h2 className="text-3xl md:text-4xl font-heading font-bold mt-1">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mt-1">
                       Welcome, {doctorInfo.name.replace("Dr. ", "")}!
                     </h2>
-                    <p className="text-sm opacity-80 mt-1 flex items-center gap-1.5">
-                      <Stethoscope className="w-4 h-4" />
-                      {doctorInfo.department} • {doctorInfo.qualifications}
+                    <p className="text-xs sm:text-sm opacity-80 mt-1.5 flex items-start justify-center md:justify-start gap-1.5">
+                      <Stethoscope className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{doctorInfo.department} • {doctorInfo.qualifications}</span>
                     </p>
 
                     {/* Quick Stats Row */}
-                    <div className="flex flex-wrap gap-4 mt-5">
+                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 mt-5">
                       <motion.div 
                         className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
