@@ -148,15 +148,15 @@ const Blog = () => {
                       {blogPosts[0].content}
                     </motion.p>
                   )}
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-auto">
+                    <div className="flex items-center flex-wrap gap-2 text-xs text-muted-foreground">
                       <User className="w-3.5 h-3.5" />
                       {blogPosts[0].author}
                       <span className="mx-1">•</span>
                       <Clock className="w-3.5 h-3.5" />
                       {blogPosts[0].read_time}
                     </div>
-                    <Button variant="ghost" size="sm" className="text-primary gap-1">
+                    <Button variant="ghost" size="sm" className="text-primary gap-1 self-start px-0 sm:px-3">
                       {expandedId === blogPosts[0].id ? "Read less" : "Read more"}
                       <ArrowRight className="w-4 h-4" />
                     </Button>

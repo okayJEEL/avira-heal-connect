@@ -13,7 +13,10 @@ const EmergencyButton = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div
+      className="fixed right-4 md:right-6 z-50 flex flex-col items-end max-w-[calc(100vw-2rem)]"
+      style={{ bottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
+    >
       <AnimatePresence>
         {open && (
           <motion.div

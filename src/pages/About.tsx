@@ -34,7 +34,7 @@ const About = () => {
               <div className="absolute bottom-0 left-0 w-20 h-20 md:w-32 md:h-32 border-b-4 border-l-4 border-primary/30 rounded-bl-2xl md:rounded-bl-3xl z-10 pointer-events-none" />
               <div className="absolute bottom-0 right-0 w-20 h-20 md:w-32 md:h-32 border-b-4 border-r-4 border-primary/30 rounded-br-2xl md:rounded-br-3xl z-10 pointer-events-none" />
 
-              <div className="relative aspect-[16/9] md:aspect-[21/9]">
+              <div className="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]">
                 <img
                   src="/avira-team.jpg"
                   alt="The Avira Hospital team standing together at the hospital entrance"
@@ -51,7 +51,7 @@ const About = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.3, duration: 0.6 }}
-                    className="bg-card/90 backdrop-blur-sm rounded-xl px-5 py-4 md:px-8 md:py-5 inline-block max-w-2xl"
+                    className="bg-card/90 backdrop-blur-sm rounded-xl px-4 py-3 md:px-8 md:py-5 inline-block max-w-2xl"
                   >
                     <p className="text-sm md:text-base font-heading font-semibold text-foreground">
                       The Avira Team
