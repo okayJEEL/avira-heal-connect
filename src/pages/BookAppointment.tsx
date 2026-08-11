@@ -477,7 +477,7 @@ const BookAppointment = () => {
             {/* Consultation Type */}
             <div>
               <Label>Consultation Type *</Label>
-              <RadioGroup value={form.consultationType} onValueChange={(v) => updateForm("consultationType", v)} className="flex gap-4 mt-2">
+              <RadioGroup value={form.consultationType} onValueChange={(v) => updateForm("consultationType", v)} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                 <div className="flex items-center gap-2 border border-border rounded-lg px-4 py-3 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors">
                   <RadioGroupItem value="opd" id="opd" />
                   <Building2 className="w-4 h-4 text-muted-foreground" />

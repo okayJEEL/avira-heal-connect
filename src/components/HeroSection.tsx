@@ -8,7 +8,7 @@ const HeroSection = () => {
   return (
     <section className="relative overflow-hidden">
       {/* Full-width hospital image hero */}
-      <div className="relative w-full h-[70vh] md:h-[85vh]">
+      <div className="relative w-full h-[75svh] min-h-[520px] max-h-[760px] md:h-[85vh] md:max-h-none">
         <img
           src={hospitalFront}
           alt="Avira Hospital - Front view of our state-of-the-art facility"
@@ -36,14 +36,14 @@ const HeroSection = () => {
               <p className="text-white/85 text-base md:text-lg leading-relaxed mb-6 max-w-lg drop-shadow">
                 Experience world-class healthcare with our team of expert doctors and state-of-the-art facilities.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/book-appointment">
-                  <Button size="lg" className="gap-2 shadow-lg">
+              <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+                <Link to="/book-appointment" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto gap-2 shadow-lg">
                     Book Appointment <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <a href="tel:02692354201">
-                  <Button size="lg" variant="outline" className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm">
+                <a href="tel:02692354201" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm">
                     <Phone className="w-4 h-4" /> Call Now
                   </Button>
                 </a>
