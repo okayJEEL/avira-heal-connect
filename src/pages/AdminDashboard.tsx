@@ -204,25 +204,28 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-muted">
       {/* Top bar */}
       <header className="bg-card border-b sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between py-3 px-4">
-          <div className="flex items-center gap-3">
-            <img src={aviraLogo} alt="Avira Hospital Logo" className="w-8 h-8 rounded-lg object-contain" />
-            <h1 className="text-lg font-heading font-bold text-primary">Avira Hospital</h1>
-            <span className="text-sm text-muted-foreground">
-              {isDoctor ? "Doctor Portal" : "Admin Dashboard"}
-            </span>
+        <div className="container mx-auto flex items-center justify-between gap-2 py-2.5 px-3 sm:py-3 sm:px-4">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <img src={aviraLogo} alt="Avira Hospital Logo" className="w-8 h-8 rounded-lg object-contain flex-shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-lg font-heading font-bold text-primary leading-tight truncate">Avira Hospital</h1>
+              <span className="text-[11px] sm:text-sm text-muted-foreground leading-tight block truncate">
+                {isDoctor ? "Doctor Portal" : "Admin Dashboard"}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground hidden sm:block">{userEmail}</span>
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+            <span className="text-sm text-muted-foreground hidden lg:block truncate max-w-[220px]">{userEmail}</span>
             {userId && <NotificationBell userId={userId} />}
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" /> Logout
+            <Button variant="outline" size="sm" onClick={handleLogout} className="px-2.5 sm:px-3">
+              <LogOut className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 md:p-8 space-y-6">
+      <main className="container mx-auto p-3 sm:p-4 md:p-8 space-y-5 md:space-y-6">
 
         {/* Doctor Welcome Banner */}
         {isDoctor && doctorInfo && (
