@@ -90,7 +90,7 @@ const AnnouncementsBoard = ({ isAdmin }: Props) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="font-heading font-bold text-lg">Announcements</h3>
           <p className="text-sm text-muted-foreground">Internal notices for all staff</p>

@@ -157,7 +157,7 @@ const BlogManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header with Add button */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-lg font-heading font-bold text-foreground">Blog Posts</h3>
           <p className="text-sm text-muted-foreground">{posts.length} total posts</p>
