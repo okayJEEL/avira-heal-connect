@@ -451,55 +451,57 @@ const AdminDashboard = () => {
             </div>
 
             <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>{isDoctor ? "My Appointments" : "Appointments Management"}</CardTitle>
+              <CardHeader className="p-4 sm:p-6 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <CardTitle className="text-lg sm:text-xl">{isDoctor ? "My Appointments" : "Appointments Management"}</CardTitle>
                   <div className="flex items-center gap-3">
                     {!isDoctor && <ExcelReportButton />}
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                       {filteredAppointments.length} appointments
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-4 flex-wrap">
-                  <div className="relative">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+                  <div className="relative w-full sm:w-[300px]">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search by patient name or mobile..."
+                      placeholder="Search name or mobile..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 w-[300px]"
+                      className="pl-10 w-full"
                     />
                   </div>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-[150px]">
-                      <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {!isDoctor && (
-                    <Select value={doctorFilter} onValueChange={setDoctorFilter}>
-                      <SelectTrigger className="w-[220px]">
-                        <Users className="w-4 h-4 mr-2" />
+                  <div className="flex gap-3">
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="flex-1 sm:w-[150px] sm:flex-none">
+                        <Filter className="w-4 h-4 mr-2 flex-shrink-0" />
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Doctors</SelectItem>
-                        <SelectItem value="vivek">Dr. Vivek Siddhpura</SelectItem>
-                        <SelectItem value="preeti">Dr. Preeti Siddhpura</SelectItem>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
                       </SelectContent>
                     </Select>
-                  )}
+                    {!isDoctor && (
+                      <Select value={doctorFilter} onValueChange={setDoctorFilter}>
+                        <SelectTrigger className="flex-1 sm:w-[220px] sm:flex-none">
+                          <Users className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Doctors</SelectItem>
+                          <SelectItem value="vivek">Dr. Vivek Siddhpura</SelectItem>
+                          <SelectItem value="preeti">Dr. Preeti Siddhpura</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
                 {loading ? (
                   <p className="text-muted-foreground">Loading...</p>
                 ) : filteredAppointments.length === 0 ? (
@@ -511,28 +513,29 @@ const AdminDashboard = () => {
                   <div className="space-y-4">
                     {filteredAppointments.map((apt) => (
                       <Card key={apt.id} className="border-l-4 border-l-primary">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className="p-2 rounded-full bg-primary/10">
+                        <CardContent className="p-3.5 sm:p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3 sm:gap-4 min-w-0">
+                              <div className="p-2 rounded-full bg-primary/10 flex-shrink-0">
                                 <Users className="w-4 h-4 text-primary" />
                               </div>
-                              <div>
-                                <h3 className="font-semibold text-foreground">{apt.patient_name}</h3>
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                  <span>📞 {apt.mobile}</span>
-                                  <span>📧 {apt.email || "N/A"}</span>
-                                  <span>📍 {apt.address || "N/A"}</span>
+                              <div className="min-w-0">
+                                <h3 className="font-semibold text-foreground break-words">{apt.patient_name}</h3>
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4 text-xs sm:text-sm text-muted-foreground mt-0.5">
+                                  <span className="whitespace-nowrap">📞 {apt.mobile}</span>
+                                  <span className="break-all">📧 {apt.email || "N/A"}</span>
+                                  <span className="break-words">📍 {apt.address || "N/A"}</span>
                                 </div>
                                 <div className="text-xs text-muted-foreground mt-1">
                                   Age: {apt.age || "N/A"} | Gender: {apt.gender || "N/A"}
                                 </div>
                               </div>
                             </div>
-                            <Badge variant={statusColor(apt.status)} className="ml-auto">
+                            <Badge variant={statusColor(apt.status)} className="flex-shrink-0">
                               {apt.status}
                             </Badge>
                           </div>
+
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-border">
                             <div>
