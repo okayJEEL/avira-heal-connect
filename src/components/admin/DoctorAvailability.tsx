@@ -547,11 +547,11 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                     <div
                       key={row.weekday}
                       className={cn(
-                        "grid grid-cols-12 gap-2 sm:gap-3 items-center p-2.5 sm:p-3 rounded-lg border transition-colors",
+                        "rounded-xl border p-3 transition-colors sm:grid sm:grid-cols-12 sm:gap-3 sm:items-center",
                         row.is_available ? "bg-card" : "bg-muted/40"
                       )}
                     >
-                      <div className="col-span-12 sm:col-span-3 flex items-center gap-3">
+                      <div className="flex items-center gap-3 sm:col-span-3">
                         <Switch
                           checked={row.is_available}
                           onCheckedChange={(v) => updateWeekly(idx, { is_available: v })}
@@ -565,41 +565,48 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                           )}
                         </div>
                       </div>
-                      <div className="col-span-4 sm:col-span-2">
-                        <Label className="text-xs text-muted-foreground">Start</Label>
-                        <Input
-                          type="time"
-                          value={row.start_time}
-                          disabled={!row.is_available}
-                          onChange={(e) => updateWeekly(idx, { start_time: e.target.value })}
-                        />
+
+                      <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-0 sm:contents">
+                        <div className="min-w-0 sm:col-span-2">
+                          <Label className="text-xs text-muted-foreground">Start</Label>
+                          <Input
+                            type="time"
+                            className="w-full min-w-0 px-2 tabular-nums"
+                            value={row.start_time}
+                            disabled={!row.is_available}
+                            onChange={(e) => updateWeekly(idx, { start_time: e.target.value })}
+                          />
+                        </div>
+                        <div className="min-w-0 sm:col-span-2">
+                          <Label className="text-xs text-muted-foreground">End</Label>
+                          <Input
+                            type="time"
+                            className="w-full min-w-0 px-2 tabular-nums"
+                            value={row.end_time}
+                            disabled={!row.is_available}
+                            onChange={(e) => updateWeekly(idx, { end_time: e.target.value })}
+                          />
+                        </div>
+                        <div className="min-w-0 col-span-2 sm:col-span-2">
+                          <Label className="text-xs text-muted-foreground">Slot (min)</Label>
+                          <Input
+                            type="number"
+                            min={5}
+                            max={120}
+                            className="w-full min-w-0 px-2"
+                            value={row.slot_minutes}
+                            disabled={!row.is_available}
+                            onChange={(e) => updateWeekly(idx, { slot_minutes: parseInt(e.target.value) || 15 })}
+                          />
+                        </div>
                       </div>
-                      <div className="col-span-4 sm:col-span-2">
-                        <Label className="text-xs text-muted-foreground">End</Label>
-                        <Input
-                          type="time"
-                          value={row.end_time}
-                          disabled={!row.is_available}
-                          onChange={(e) => updateWeekly(idx, { end_time: e.target.value })}
-                        />
-                      </div>
-                      <div className="col-span-4 sm:col-span-2">
-                        <Label className="text-xs text-muted-foreground">Slot (min)</Label>
-                        <Input
-                          type="number"
-                          min={5}
-                          max={120}
-                          value={row.slot_minutes}
-                          disabled={!row.is_available}
-                          onChange={(e) => updateWeekly(idx, { slot_minutes: parseInt(e.target.value) || 15 })}
-                        />
-                      </div>
-                      <div className="col-span-12 sm:col-span-3 flex sm:justify-end">
+
+                      <div className="mt-3 sm:mt-0 sm:col-span-3 flex sm:justify-end">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="gap-1.5"
+                          className="gap-1.5 w-full sm:w-auto"
                           disabled={!row.is_available}
                           onClick={() => copyToAllWorkingDays(idx)}
                           title="Copy these hours to every other working day"
@@ -609,6 +616,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                         </Button>
                       </div>
                     </div>
+
                   );
                 })}
                 <div className="flex justify-end pt-2">
