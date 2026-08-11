@@ -322,9 +322,9 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-2xl font-heading font-bold text-foreground">{greeting()}, Admin</h2>
-              <Badge variant="outline" className="text-xs">Master Admin</Badge>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h2 className="text-xl sm:text-2xl font-heading font-bold text-foreground">{greeting()}, Admin</h2>
+              <Badge variant="outline" className="text-[10px] sm:text-xs whitespace-nowrap">Master Admin</Badge>
             </div>
           </motion.div>
         )}
