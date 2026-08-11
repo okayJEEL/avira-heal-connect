@@ -204,25 +204,28 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-muted">
       {/* Top bar */}
       <header className="bg-card border-b sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between py-3 px-4">
-          <div className="flex items-center gap-3">
-            <img src={aviraLogo} alt="Avira Hospital Logo" className="w-8 h-8 rounded-lg object-contain" />
-            <h1 className="text-lg font-heading font-bold text-primary">Avira Hospital</h1>
-            <span className="text-sm text-muted-foreground">
-              {isDoctor ? "Doctor Portal" : "Admin Dashboard"}
-            </span>
+        <div className="container mx-auto flex items-center justify-between gap-2 py-2.5 px-3 sm:py-3 sm:px-4">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <img src={aviraLogo} alt="Avira Hospital Logo" className="w-8 h-8 rounded-lg object-contain flex-shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-lg font-heading font-bold text-primary leading-tight truncate">Avira Hospital</h1>
+              <span className="text-[11px] sm:text-sm text-muted-foreground leading-tight block truncate">
+                {isDoctor ? "Doctor Portal" : "Admin Dashboard"}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground hidden sm:block">{userEmail}</span>
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+            <span className="text-sm text-muted-foreground hidden lg:block truncate max-w-[220px]">{userEmail}</span>
             {userId && <NotificationBell userId={userId} />}
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" /> Logout
+            <Button variant="outline" size="sm" onClick={handleLogout} className="px-2.5 sm:px-3">
+              <LogOut className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 md:p-8 space-y-6">
+      <main className="container mx-auto p-3 sm:p-4 md:p-8 space-y-5 md:space-y-6">
 
         {/* Doctor Welcome Banner */}
         {isDoctor && doctorInfo && (
@@ -236,7 +239,7 @@ const AdminDashboard = () => {
                 <div className="flex flex-col md:flex-row items-center">
                   {/* Doctor Photo */}
                   <motion.div 
-                    className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-primary-foreground/30 shadow-lg m-6 flex-shrink-0"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-primary-foreground/30 shadow-lg mt-5 mb-1 md:m-6 flex-shrink-0"
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
@@ -246,44 +249,44 @@ const AdminDashboard = () => {
 
                   {/* Welcome Text */}
                   <motion.div 
-                    className="flex-1 p-6 text-primary-foreground"
+                    className="flex-1 w-full p-5 sm:p-6 text-primary-foreground text-center md:text-left"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                   >
-                    <p className="text-sm font-medium opacity-80 flex items-center gap-1.5">
+                    <p className="text-sm font-medium opacity-80 flex items-center justify-center md:justify-start gap-1.5">
                       <Heart className="w-4 h-4" /> {greeting()}
                     </p>
-                    <h2 className="text-3xl md:text-4xl font-heading font-bold mt-1">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold mt-1">
                       Welcome, {doctorInfo.name.replace("Dr. ", "")}!
                     </h2>
-                    <p className="text-sm opacity-80 mt-1 flex items-center gap-1.5">
-                      <Stethoscope className="w-4 h-4" />
-                      {doctorInfo.department} • {doctorInfo.qualifications}
+                    <p className="text-xs sm:text-sm opacity-80 mt-1.5 flex items-start justify-center md:justify-start gap-1.5">
+                      <Stethoscope className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{doctorInfo.department} • {doctorInfo.qualifications}</span>
                     </p>
 
                     {/* Quick Stats Row */}
-                    <div className="flex flex-wrap gap-4 mt-5">
+                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 mt-5">
                       <motion.div 
-                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-3 sm:px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5, duration: 0.4 }}
                       >
-                        <p className="text-2xl font-bold">{todayAppointments.filter(a => a.status !== "cancelled").length}</p>
+                        <p className="text-xl sm:text-2xl font-bold">{todayAppointments.filter(a => a.status !== "cancelled").length}</p>
                         <p className="text-xs opacity-80">Today's Patients</p>
                       </motion.div>
                       <motion.div 
-                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-3 sm:px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6, duration: 0.4 }}
                       >
-                        <p className="text-2xl font-bold">{upcomingAppointments.filter(a => a.status !== "completed").length}</p>
+                        <p className="text-xl sm:text-2xl font-bold">{upcomingAppointments.filter(a => a.status !== "completed").length}</p>
                         <p className="text-xs opacity-80">Upcoming</p>
                       </motion.div>
                       <motion.div 
-                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-3 sm:px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.7, duration: 0.4 }}
@@ -294,7 +297,7 @@ const AdminDashboard = () => {
                         <p className="text-xs opacity-80">Video Consults</p>
                       </motion.div>
                       <motion.div 
-                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-3 sm:px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.8, duration: 0.4 }}
@@ -319,15 +322,15 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-2xl font-heading font-bold text-foreground">{greeting()}, Admin</h2>
-              <Badge variant="outline" className="text-xs">Master Admin</Badge>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h2 className="text-xl sm:text-2xl font-heading font-bold text-foreground">{greeting()}, Admin</h2>
+              <Badge variant="outline" className="text-[10px] sm:text-xs whitespace-nowrap">Master Admin</Badge>
             </div>
           </motion.div>
         )}
 
         {/* Quick Nav Buttons */}
-        <div className={`grid gap-4 ${isDoctor ? "grid-cols-2 md:grid-cols-4" : "grid-cols-2 md:grid-cols-6"}`}>
+        <div className={`grid gap-2.5 sm:gap-4 grid-cols-3 ${isDoctor ? "md:grid-cols-4" : "sm:grid-cols-4 md:grid-cols-6"}`}>
           {[
             { label: "Appointments", icon: Calendar, tab: "appointments", show: true },
             { label: "Doctors", icon: Users, tab: "doctors", show: !isDoctor },
@@ -345,22 +348,22 @@ const AdminDashboard = () => {
                   setActiveTab(item.tab);
                 }
               }}
-              className={`group relative p-6 rounded-xl border bg-card shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in ${
+              className={`group relative p-3 sm:p-5 md:p-6 rounded-xl border bg-card shadow-sm hover:shadow-lg transition-all duration-300 md:hover:-translate-y-1 animate-fade-in ${
                 activeTab === item.tab && item.tab !== "website" ? "border-primary ring-2 ring-primary/20" : "border-border"
               }`}
             >
-              <div className="flex flex-col items-center gap-3">
-                <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                  <item.icon className="w-7 h-7 text-primary" />
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="p-2 sm:p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+                  <item.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-primary" />
                 </div>
-                <span className="font-medium text-foreground">{item.label}</span>
+                <span className="font-medium text-foreground text-[11px] sm:text-sm leading-tight text-center">{item.label}</span>
               </div>
             </button>
           ))}
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full mb-6 ${isDoctor ? "grid-cols-4" : "grid-cols-6"}`}>
+          <TabsList className={`hidden md:grid w-full mb-6 ${isDoctor ? "grid-cols-4" : "grid-cols-6"}`}>
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {isDoctor ? "My Appointments" : "Appointments"}
@@ -391,55 +394,56 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="appointments" className="space-y-6">
+          <TabsContent value="appointments" className="space-y-5 md:space-y-6">
             {/* Stats */}
-            <div className={`grid grid-cols-1 gap-4 ${isDoctor ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
+            <div className={`grid grid-cols-2 gap-3 sm:gap-4 ${isDoctor ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
+
               <Card>
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                   <div className="p-2 rounded-lg bg-primary/10">
-                    <Calendar className="w-6 h-6 text-primary" />
+                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{doctorFilteredAppointments.length}</p>
-                    <p className="text-sm text-muted-foreground">{isDoctor ? "My Appointments" : "Total Appointments"}</p>
+                    <p className="text-xl sm:text-2xl font-bold">{doctorFilteredAppointments.length}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-tight">{isDoctor ? "My Appointments" : "Total Appointments"}</p>
                   </div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                   <div className="p-2 rounded-lg bg-orange-100">
-                    <Clock className="w-6 h-6 text-orange-600" />
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">
                       {doctorFilteredAppointments.filter((a) => a.status === "pending").length}
                     </p>
-                    <p className="text-sm text-muted-foreground">Pending</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Pending</p>
                   </div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                   <div className="p-2 rounded-lg bg-green-100">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">
                       {doctorFilteredAppointments.filter((a) => a.status === "confirmed").length}
                     </p>
-                    <p className="text-sm text-muted-foreground">Confirmed</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Confirmed</p>
                   </div>
                 </CardContent>
               </Card>
               {!isDoctor && (
                 <Card>
-                  <CardContent className="flex items-center gap-4 p-6">
+                  <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                     <div className="p-2 rounded-lg bg-blue-100">
-                      <Activity className="w-6 h-6 text-blue-600" />
+                      <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold">2</p>
-                      <p className="text-sm text-muted-foreground">Doctors</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Doctors</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -447,55 +451,57 @@ const AdminDashboard = () => {
             </div>
 
             <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>{isDoctor ? "My Appointments" : "Appointments Management"}</CardTitle>
+              <CardHeader className="p-4 sm:p-6 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <CardTitle className="text-lg sm:text-xl">{isDoctor ? "My Appointments" : "Appointments Management"}</CardTitle>
                   <div className="flex items-center gap-3">
                     {!isDoctor && <ExcelReportButton />}
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                       {filteredAppointments.length} appointments
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-4 flex-wrap">
-                  <div className="relative">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+                  <div className="relative w-full sm:w-[300px]">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search by patient name or mobile..."
+                      placeholder="Search name or mobile..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 w-[300px]"
+                      className="pl-10 w-full"
                     />
                   </div>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-[150px]">
-                      <Filter className="w-4 h-4 mr-2" />
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {!isDoctor && (
-                    <Select value={doctorFilter} onValueChange={setDoctorFilter}>
-                      <SelectTrigger className="w-[220px]">
-                        <Users className="w-4 h-4 mr-2" />
+                  <div className="flex gap-3">
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="flex-1 sm:w-[150px] sm:flex-none">
+                        <Filter className="w-4 h-4 mr-2 flex-shrink-0" />
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Doctors</SelectItem>
-                        <SelectItem value="vivek">Dr. Vivek Siddhpura</SelectItem>
-                        <SelectItem value="preeti">Dr. Preeti Siddhpura</SelectItem>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
                       </SelectContent>
                     </Select>
-                  )}
+                    {!isDoctor && (
+                      <Select value={doctorFilter} onValueChange={setDoctorFilter}>
+                        <SelectTrigger className="flex-1 sm:w-[220px] sm:flex-none">
+                          <Users className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Doctors</SelectItem>
+                          <SelectItem value="vivek">Dr. Vivek Siddhpura</SelectItem>
+                          <SelectItem value="preeti">Dr. Preeti Siddhpura</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
                 {loading ? (
                   <p className="text-muted-foreground">Loading...</p>
                 ) : filteredAppointments.length === 0 ? (
@@ -507,28 +513,29 @@ const AdminDashboard = () => {
                   <div className="space-y-4">
                     {filteredAppointments.map((apt) => (
                       <Card key={apt.id} className="border-l-4 border-l-primary">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className="p-2 rounded-full bg-primary/10">
+                        <CardContent className="p-3.5 sm:p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3 sm:gap-4 min-w-0">
+                              <div className="p-2 rounded-full bg-primary/10 flex-shrink-0">
                                 <Users className="w-4 h-4 text-primary" />
                               </div>
-                              <div>
-                                <h3 className="font-semibold text-foreground">{apt.patient_name}</h3>
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                  <span>📞 {apt.mobile}</span>
-                                  <span>📧 {apt.email || "N/A"}</span>
-                                  <span>📍 {apt.address || "N/A"}</span>
+                              <div className="min-w-0">
+                                <h3 className="font-semibold text-foreground break-words">{apt.patient_name}</h3>
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4 text-xs sm:text-sm text-muted-foreground mt-0.5">
+                                  <span className="whitespace-nowrap">📞 {apt.mobile}</span>
+                                  <span className="break-all">📧 {apt.email || "N/A"}</span>
+                                  <span className="break-words">📍 {apt.address || "N/A"}</span>
                                 </div>
                                 <div className="text-xs text-muted-foreground mt-1">
                                   Age: {apt.age || "N/A"} | Gender: {apt.gender || "N/A"}
                                 </div>
                               </div>
                             </div>
-                            <Badge variant={statusColor(apt.status)} className="ml-auto">
+                            <Badge variant={statusColor(apt.status)} className="flex-shrink-0">
                               {apt.status}
                             </Badge>
                           </div>
+
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-border">
                             <div>

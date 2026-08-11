@@ -16,17 +16,17 @@ const MessagesHub = ({ isAdmin }: Props) => {
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="inbox" className="flex items-center gap-1.5 text-xs sm:text-sm">
+          <TabsTrigger value="inbox" className="flex items-center gap-1.5 text-[11px] sm:text-sm px-1.5">
             <Inbox className="w-4 h-4" />
-            <span className="hidden sm:inline">Inbox</span>
+            <span className="truncate">Inbox</span>
           </TabsTrigger>
-          <TabsTrigger value="chat" className="flex items-center gap-1.5 text-xs sm:text-sm">
+          <TabsTrigger value="chat" className="flex items-center gap-1.5 text-[11px] sm:text-sm px-1.5">
             <MessageCircle className="w-4 h-4" />
-            <span className="hidden sm:inline">Staff Chat</span>
+            <span className="truncate">Staff Chat</span>
           </TabsTrigger>
-          <TabsTrigger value="announcements" className="flex items-center gap-1.5 text-xs sm:text-sm">
+          <TabsTrigger value="announcements" className="flex items-center gap-1.5 text-[11px] sm:text-sm px-1.5">
             <Megaphone className="w-4 h-4" />
-            <span className="hidden sm:inline">Announcements</span>
+            <span className="truncate">Announcements</span>
           </TabsTrigger>
         </TabsList>
 

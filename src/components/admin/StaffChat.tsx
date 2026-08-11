@@ -90,8 +90,8 @@ const StaffChat = () => {
         <p className="text-sm text-muted-foreground">Real-time communication between staff, doctors & admin</p>
       </div>
 
-      <Card className="flex flex-col" style={{ height: "500px" }}>
-        <CardContent className="flex-1 overflow-y-auto p-4 space-y-3">
+      <Card className="flex flex-col h-[65vh] min-h-[380px] sm:h-[500px]">
+        <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
               <MessageCircle className="w-12 h-12 mb-3 opacity-40" />
@@ -107,7 +107,7 @@ const StaffChat = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className={`flex ${isMe ? "justify-end" : "justify-start"}`}
                 >
-                  <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+                  <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-3.5 sm:px-4 py-2.5 break-words ${
                     isMe
                       ? "bg-primary text-primary-foreground rounded-br-sm"
                       : "bg-muted text-foreground rounded-bl-sm"

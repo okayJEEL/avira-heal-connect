@@ -95,7 +95,7 @@ const ContactInbox = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="font-heading font-bold text-lg">Contact Form Inbox</h3>
           <p className="text-sm text-muted-foreground">{messages.length} messages • {newCount} new</p>
@@ -120,7 +120,7 @@ const ContactInbox = () => {
               transition={{ delay: i * 0.05 }}
             >
               <Card className={`cursor-pointer transition-all hover:shadow-md ${msg.status === "new" ? "border-l-4 border-l-blue-500" : ""}`}>
-                <CardContent className="p-4" onClick={() => toggleExpand(msg)}>
+                <CardContent className="p-3.5 sm:p-4" onClick={() => toggleExpand(msg)}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -129,13 +129,13 @@ const ContactInbox = () => {
                       </div>
                       {msg.subject && <p className="text-sm font-medium text-foreground">{msg.subject}</p>}
                       <p className="text-sm text-muted-foreground truncate">{msg.message}</p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                        {msg.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{msg.email}</span>}
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
+                        {msg.email && <span className="flex items-center gap-1 min-w-0"><Mail className="w-3 h-3 flex-shrink-0" /><span className="break-all">{msg.email}</span></span>}
                         {msg.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{msg.phone}</span>}
                         <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{format(new Date(msg.created_at), "dd MMM yyyy, hh:mm a")}</span>
                       </div>
                     </div>
-                    {expandedId === msg.id ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />}
+                    {expandedId === msg.id ? <ChevronUp className="w-5 h-5 text-muted-foreground flex-shrink-0" /> : <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0" />}
                   </div>
 
                   <AnimatePresence>
