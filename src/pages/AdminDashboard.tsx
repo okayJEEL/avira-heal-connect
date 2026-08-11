@@ -399,51 +399,51 @@ const AdminDashboard = () => {
             <div className={`grid grid-cols-2 gap-3 sm:gap-4 ${isDoctor ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
 
               <Card>
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                   <div className="p-2 rounded-lg bg-primary/10">
-                    <Calendar className="w-6 h-6 text-primary" />
+                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{doctorFilteredAppointments.length}</p>
-                    <p className="text-sm text-muted-foreground">{isDoctor ? "My Appointments" : "Total Appointments"}</p>
+                    <p className="text-xl sm:text-2xl font-bold">{doctorFilteredAppointments.length}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-tight">{isDoctor ? "My Appointments" : "Total Appointments"}</p>
                   </div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                   <div className="p-2 rounded-lg bg-orange-100">
-                    <Clock className="w-6 h-6 text-orange-600" />
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">
                       {doctorFilteredAppointments.filter((a) => a.status === "pending").length}
                     </p>
-                    <p className="text-sm text-muted-foreground">Pending</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Pending</p>
                   </div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="flex items-center gap-4 p-6">
+                <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                   <div className="p-2 rounded-lg bg-green-100">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">
                       {doctorFilteredAppointments.filter((a) => a.status === "confirmed").length}
                     </p>
-                    <p className="text-sm text-muted-foreground">Confirmed</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Confirmed</p>
                   </div>
                 </CardContent>
               </Card>
               {!isDoctor && (
                 <Card>
-                  <CardContent className="flex items-center gap-4 p-6">
+                  <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                     <div className="p-2 rounded-lg bg-blue-100">
-                      <Activity className="w-6 h-6 text-blue-600" />
+                      <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold">2</p>
-                      <p className="text-sm text-muted-foreground">Doctors</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Doctors</p>
                     </div>
                   </CardContent>
                 </Card>
