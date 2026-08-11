@@ -566,7 +566,7 @@ const DoctorAvailability = ({ currentUserId, isAdmin }: Props) => {
                         </div>
                       </div>
 
-                      <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-0 sm:contents">
+                      <div className="mt-3 grid grid-cols-1 min-[420px]:grid-cols-2 gap-2 sm:mt-0 sm:contents">
                         <div className="min-w-0 sm:col-span-2">
                           <Label className="text-xs text-muted-foreground">Start</Label>
                           <Input
