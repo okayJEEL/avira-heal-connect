@@ -61,14 +61,14 @@ const StaffLogin = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-background/40 to-secondary/60" />
       <div className="bg-card rounded-2xl shadow-lg border border-border w-full max-w-md overflow-hidden relative z-10">
         {/* Header */}
-        <div className="text-center pt-8 pb-4">
+        <div className="text-center pt-7 sm:pt-8 pb-4">
           <img src={aviraLogo} alt="Avira Hospital Logo" className="w-14 h-14 rounded-full object-contain mx-auto mb-4" />
           <h1 className="text-2xl font-heading font-bold text-foreground">Avira Hospital</h1>
           <p className="text-muted-foreground text-sm mt-1">Staff & Admin Portal</p>
         </div>
 
         {/* Login Form */}
-        <div className="px-8 pb-8">
+        <div className="px-5 sm:px-8 pb-6 sm:pb-8">
           <div className="flex items-center gap-2 mb-6">
             <Lock className="w-5 h-5 text-primary" />
             <h2 className="text-lg font-semibold text-foreground">Staff Login</h2>
