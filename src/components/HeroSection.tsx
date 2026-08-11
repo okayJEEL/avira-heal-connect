@@ -19,7 +19,7 @@ const HeroSection = () => {
 
         {/* Content overlay */}
         <div className="absolute inset-0 flex items-end">
-          <div className="container-custom w-full pb-12 md:pb-20 px-4 md:px-8">
+          <div className="container-custom w-full pb-16 md:pb-20 px-4 md:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
