@@ -268,25 +268,25 @@ const AdminDashboard = () => {
                     {/* Quick Stats Row */}
                     <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 mt-5">
                       <motion.div 
-                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-3 sm:px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5, duration: 0.4 }}
                       >
-                        <p className="text-2xl font-bold">{todayAppointments.filter(a => a.status !== "cancelled").length}</p>
+                        <p className="text-xl sm:text-2xl font-bold">{todayAppointments.filter(a => a.status !== "cancelled").length}</p>
                         <p className="text-xs opacity-80">Today's Patients</p>
                       </motion.div>
                       <motion.div 
-                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-3 sm:px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6, duration: 0.4 }}
                       >
-                        <p className="text-2xl font-bold">{upcomingAppointments.filter(a => a.status !== "completed").length}</p>
+                        <p className="text-xl sm:text-2xl font-bold">{upcomingAppointments.filter(a => a.status !== "completed").length}</p>
                         <p className="text-xs opacity-80">Upcoming</p>
                       </motion.div>
                       <motion.div 
-                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-3 sm:px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.7, duration: 0.4 }}
@@ -297,7 +297,7 @@ const AdminDashboard = () => {
                         <p className="text-xs opacity-80">Video Consults</p>
                       </motion.div>
                       <motion.div 
-                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-5 py-3 text-center"
+                        className="bg-primary-foreground/15 backdrop-blur-sm rounded-xl px-3 sm:px-5 py-3 text-center"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.8, duration: 0.4 }}
