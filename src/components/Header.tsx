@@ -1,17 +1,32 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Phone, Clock, Menu, X } from "lucide-react";
+import {
+  Phone,
+  Clock,
+  Menu,
+  X,
+  Home,
+  Info,
+  Stethoscope,
+  Images,
+  Newspaper,
+  Mail,
+  CalendarPlus,
+  ChevronRight,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import aviraLogo from "@/assets/avira-logo.png";
 
 const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "About Us", to: "/about" },
-  { label: "Our Doctors", to: "/doctors" },
-  { label: "Gallery", to: "/gallery" },
-  { label: "Blog", to: "/blog" },
-  { label: "Contact", to: "/contact" },
+  { label: "Home", to: "/", icon: Home, hint: "Welcome to Avira" },
+  { label: "About Us", to: "/about", icon: Info, hint: "Our story & team" },
+  { label: "Our Doctors", to: "/doctors", icon: Stethoscope, hint: "Meet our specialists" },
+  { label: "Gallery", to: "/gallery", icon: Images, hint: "Inside the hospital" },
+  { label: "Blog", to: "/blog", icon: Newspaper, hint: "Health articles" },
+  { label: "Contact", to: "/contact", icon: Mail, hint: "Reach out to us" },
 ];
+
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
