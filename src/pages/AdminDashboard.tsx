@@ -19,6 +19,7 @@ import MessagesHub from "@/components/admin/MessagesHub";
 import NotificationBell from "@/components/admin/NotificationBell";
 import DoctorAvailability from "@/components/admin/DoctorAvailability";
 import ExcelReportButton from "@/components/admin/ExcelReportButton";
+import DoctorPasswordManager from "@/components/admin/DoctorPasswordManager";
 
 interface Appointment {
   id: string;
@@ -637,7 +638,15 @@ const AdminDashboard = () => {
           </TabsContent>
 
           {!isDoctor && (
-            <TabsContent value="doctors">
+            <TabsContent value="doctors" className="space-y-6">
+              {userRole === "admin" && (
+                <DoctorPasswordManager
+                  doctors={[
+                    { name: "Dr. Vivek Siddhpura", email: "dr.vivek@avirahospital.com", image: drVivekImg },
+                    { name: "Dr. Preeti Siddhpura", email: "dr.preeti@avirahospital.com", image: drPreetiImg },
+                  ]}
+                />
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
                   {
