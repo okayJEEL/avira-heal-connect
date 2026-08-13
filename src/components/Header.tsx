@@ -12,7 +12,6 @@ import {
   Newspaper,
   Mail,
   CalendarPlus,
-  ChevronRight,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -112,49 +111,67 @@ const Header = () => {
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               className="lg:hidden overflow-hidden border-t bg-gradient-to-b from-primary/[0.06] via-card to-card"
             >
-              <div className="px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="px-4 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:px-6 max-w-md mx-auto">
+                {/* Centered drawer header */}
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="mb-5 flex flex-col items-center text-center"
+                >
+                  <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                    <img
+                      src={aviraLogo}
+                      alt="Avira Hospital"
+                      className="h-8 w-8 rounded-md object-contain"
+                    />
+                  </div>
+                  <p className="text-sm font-heading font-semibold text-foreground">Avira Hospital</p>
+                  <p className="text-xs text-muted-foreground">Quick Navigation</p>
+                </motion.div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {navLinks.map((link, i) => {
                     const Icon = link.icon;
                     const active = location.pathname === link.to;
                     return (
                       <motion.div
                         key={link.to}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.92 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.04 * i, duration: 0.25 }}
+                        className="col-span-1"
                       >
                         <Link
                           to={link.to}
                           onClick={() => setMobileOpen(false)}
-                          className={`group flex items-center gap-3 rounded-2xl border p-3 transition-all active:scale-[0.98] ${
+                          className={`group flex flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-all active:scale-[0.97] ${
                             active
                               ? "border-primary/40 bg-primary/10 shadow-sm"
                               : "border-border bg-card hover:border-primary/30 hover:bg-primary/5"
                           }`}
                         >
                           <span
-                            className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-colors ${
+                            className={`flex h-11 w-11 items-center justify-center rounded-xl transition-colors ${
                               active
                                 ? "bg-primary text-primary-foreground"
-                                : "bg-primary/10 text-primary"
+                                : "bg-primary/10 text-primary group-hover:bg-primary/20"
                             }`}
                           >
                             <Icon className="h-5 w-5" />
                           </span>
-                          <span className="min-w-0 flex-1">
+                          <span className="min-w-0">
                             <span
-                              className={`block truncate text-[15px] font-heading font-semibold ${
+                              className={`block text-sm font-heading font-semibold leading-tight ${
                                 active ? "text-primary" : "text-foreground"
                               }`}
                             >
                               {link.label}
                             </span>
-                            <span className="block truncate text-xs text-muted-foreground">
+                            <span className="block truncate text-[10px] text-muted-foreground mt-0.5">
                               {link.hint}
                             </span>
                           </span>
-                          <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                         </Link>
                       </motion.div>
                     );
@@ -165,7 +182,7 @@ const Header = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.28, duration: 0.25 }}
-                  className="mt-4 space-y-3"
+                  className="mt-5 space-y-3"
                 >
                   <Link to="/book-appointment" onClick={() => setMobileOpen(false)} className="block">
                     <Button size="lg" className="w-full gap-2 rounded-2xl text-base shadow-md">
@@ -174,29 +191,21 @@ const Header = () => {
                     </Button>
                   </Link>
 
-                  <div className="flex items-center justify-between gap-3 rounded-2xl bg-primary/10 px-4 py-3">
-                    <div className="min-w-0">
-                      <p className="text-xs font-medium text-muted-foreground">
-                        24/7 Emergency Helpline
-                      </p>
-                      <a
-                        href="tel:02692354201"
-                        className="block truncate font-heading text-base font-bold text-primary"
-                      >
-                        02692 354 201
-                      </a>
-                    </div>
-                    <a
-                      href="tel:02692354201"
-                      aria-label="Call emergency helpline"
-                      className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md active:scale-95 transition-transform"
-                    >
+                  <a
+                    href="tel:02692354201"
+                    className="group flex flex-col items-center justify-center gap-2 rounded-2xl bg-primary/10 px-4 py-4 text-center transition-colors hover:bg-primary/15 active:scale-[0.98]"
+                  >
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
                       <Phone className="h-5 w-5" />
-                    </a>
-                  </div>
+                    </span>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">24/7 Emergency Helpline</p>
+                      <p className="font-heading text-lg font-bold text-primary">02692 354 201</p>
+                    </div>
+                  </a>
 
-                  <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                    <Clock className="h-3.5 w-3.5" />
+                  <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground text-center">
+                    <Clock className="h-3.5 w-3.5 flex-shrink-0" />
                     OPD 10:00 AM – 1:00 PM &amp; 5:00 PM – 8:00 PM
                   </p>
                 </motion.div>
